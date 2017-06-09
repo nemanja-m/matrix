@@ -40,7 +40,8 @@ defmodule Matrix.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
-      {:ex_spec, "~> 2.0", only: :test}
+      {:ex_spec, "~> 2.0", only: :test},
+      {:mock, "~> 0.2.0", only: :test}
    ]
   end
 end

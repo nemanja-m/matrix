@@ -9,7 +9,6 @@ config :matrix, Matrix.Endpoint,
     npm: ["run", "watch"]
   ]
 
-
 # Watch static and templates for browser reloading.
 config :matrix, Matrix.Endpoint,
   live_reload: [
