@@ -23,7 +23,8 @@ defmodule Matrix.Mixfile do
         :phoenix_html,
         :cowboy,
         :logger,
-        :gettext
+        :gettext,
+        :httpoison
       ]
     ]
   end
@@ -40,6 +41,7 @@ defmodule Matrix.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
+      {:httpoison, "~> 0.11.1"},
       {:ex_spec, "~> 2.0", only: :test},
       {:mock, "~> 0.2.0", only: :test}
    ]
