@@ -14,7 +14,7 @@ defmodule ConfigurationTest do
 
     context "when node is not master" do
       it "returns false" do
-        with_mock Application, [get_env: fn (_, _, _) -> "false" end] do
+        with_mock Application, [get_env: fn (_, _) -> "false" end] do
           refute Configuration.is_master_node?
         end
       end
