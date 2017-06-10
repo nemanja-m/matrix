@@ -4,4 +4,25 @@ defmodule Matrix.Configuration do
     (Application.get_env(:matrix, :master_node) |> String.downcase) == "true"
   end
 
+  def master_node_url do
+    Application.get_env(:matrix, :master_node_url) || "http://localhost:4000"
+  end
+
+  def this do
+    %Matrix.AgentCenter{
+      aliaz: this_aliaz(),
+      address: this_url()
+    }
+  end
+
+  def this_aliaz do
+    Application.get_env(:matrix, :aliaz) || "Mars"
+  end
+
+  def this_url do
+    host = Application.get_env(:matrix, Matrix.Endpoint)[:url][:host]
+    port = Application.get_env(:matrix, Matrix.Endpoint)[:http][:port]
+
+    "#{host}:#{port}"
+  end
 end

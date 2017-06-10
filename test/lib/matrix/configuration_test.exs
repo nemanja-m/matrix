@@ -22,4 +22,24 @@ defmodule ConfigurationTest do
       end
     end
   end
+
+  describe ".master_node_url" do
+    test_with_mock "returns master node url", Application, [get_env: fn (:matrix, :master_node_url) -> "http://localhost:4000" end] do
+      assert Configuration.master_node_url == "http://localhost:4000"
+    end
+  end
+
+  describe ".this" do
+    it "returns this agent center struct" do
+      assert Configuration.this.aliaz == "Mars"
+      assert Configuration.this.address == "localhost:4001"
+    end
+  end
+
+  describe ".this_url" do
+    it "returns url of this node" do
+      assert Configuration.this_url == "localhost:4001"
+    end
+  end
+
 end

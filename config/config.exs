@@ -20,6 +20,7 @@ config :logger, :console,
 
 config :matrix, :master_node, System.get_env["MASTER"] || "true"
 config :matrix, :master_node_url, System.get_env["MASTER_URL"]
+config :matrix, :aliaz, System.get_env["ALIAS"]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
