@@ -7,7 +7,7 @@ defmodule Matrix.ConnectionManager do
         {"Content-Type", "application/json"}
       ]
 
-      HTTPoison.post!(Configuration.master_node_url, Configuration.this, headers)
+      HTTPoison.post!("#{Configuration.master_node_url}/node", Configuration.this, headers)
     else
       nil
     end
