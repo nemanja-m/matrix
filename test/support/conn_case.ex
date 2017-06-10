@@ -19,6 +19,7 @@ defmodule Matrix.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
+      use ExSpec
 
       import Matrix.Router.Helpers
 
