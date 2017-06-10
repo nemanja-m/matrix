@@ -1,0 +1,15 @@
+[
+  {
+    "request": {
+      "url": "http://localhost:4000/node"
+    },
+    "response": {
+      "status_code": 500,
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": "error"
+    }
+  }
+]
+
