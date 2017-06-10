@@ -8,7 +8,9 @@ defmodule ConfigurationTest do
   describe ".is_master_node?" do
     context "when node is master" do
       it "returns true" do
-        assert Configuration.is_master_node?
+        with_mock Application, [get_env: fn (_, _) -> "true" end] do
+          assert Configuration.is_master_node?
+        end
       end
     end
 

@@ -10,7 +10,12 @@ defmodule Matrix do
     ]
 
     opts = [strategy: :one_for_one, name: Matrix.Supervisor]
-    Supervisor.start_link(children, opts)
+    pid = Supervisor.start_link(children, opts)
+
+    # Register this node to network
+    Matrix.ConnectionManager.register_self
+
+    pid
   end
 
   # Tell Phoenix to update the endpoint configuration
