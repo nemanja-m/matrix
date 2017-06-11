@@ -1,7 +1,9 @@
 defmodule Matrix.Configuration do
 
   def is_master_node? do
-    (Application.get_env(:matrix, :master_node) |> String.downcase) == "true"
+    (Application.get_env(:matrix, :master_node) || "true")
+    |> String.downcase
+    |> String.equivalent?("true")
   end
 
   def master_node_url do

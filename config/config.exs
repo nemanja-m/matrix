@@ -18,7 +18,7 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-config :matrix, :master_node, System.get_env["MASTER"] || "true"
+config :matrix, :master_node, System.get_env["MASTER"]
 config :matrix, :master_node_url, System.get_env["MASTER_URL"]
 config :matrix, :aliaz, System.get_env["ALIAS"]
 

@@ -12,12 +12,18 @@ defmodule Matrix.ConnectionManager do
     ]
 
     url = "#{Configuration.master_node_url}/node"
-    body = Configuration.this
+    body = Poison.encode! Configuration.this
 
     case HTTPoison.post(url, body, headers) do
       {:ok, %HTTPoison.Response{status_code: 200}} ->
         Logger.info "Node registered successfully"
         :ok
+
+      {:ok, response} ->
+        body = Poison.decode! response.body
+        Logger.error "Node registeration failed: #{body["error"]}"
+        :error
+
       _ ->
         Logger.error "Node registeration failed"
         :error
@@ -25,4 +31,7 @@ defmodule Matrix.ConnectionManager do
   end
   defp register_self(master_node: true), do: nil
 
+  def register_agent_center(aliaz: aliaz, address: address) do
+
+  end
 end

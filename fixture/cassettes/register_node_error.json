@@ -8,7 +8,7 @@
       "headers": {
         "Content-Type": "application/json"
       },
-      "body": "error"
+      "body": "{\"error\": \"Agent center already exist in cluster\"}"
     }
   }
 ]
