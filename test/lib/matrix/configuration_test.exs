@@ -36,9 +36,9 @@ defmodule ConfigurationTest do
     end
   end
 
-  describe ".this_url" do
+  describe ".this_address" do
     it "returns url of this node" do
-      assert Configuration.this_url == "localhost:4001"
+      assert Configuration.this_address == "localhost:4001"
     end
   end
 

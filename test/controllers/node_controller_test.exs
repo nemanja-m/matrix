@@ -1,8 +1,6 @@
 defmodule Matrix.NodeControllerTest do
   use Matrix.ConnCase
 
-  alias Matrix.Configuration
-
   setup %{conn: conn} do
     conn = put_req_header(conn, "content-type", "application/json")
 

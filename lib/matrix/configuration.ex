@@ -11,7 +11,7 @@ defmodule Matrix.Configuration do
   def this do
     %Matrix.AgentCenter{
       aliaz: this_aliaz(),
-      address: this_url()
+      address: this_address()
     }
   end
 
@@ -19,7 +19,7 @@ defmodule Matrix.Configuration do
     Application.get_env(:matrix, :aliaz) || "Mars"
   end
 
-  def this_url do
+  def this_address do
     host = Application.get_env(:matrix, Matrix.Endpoint)[:url][:host]
     port = Application.get_env(:matrix, Matrix.Endpoint)[:http][:port]
 
