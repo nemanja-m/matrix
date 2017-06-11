@@ -29,6 +29,16 @@ defmodule Matrix.ClusterTest do
     end
   end
 
+  describe ".exist?" do
+    it "returns true when node exists" do
+      assert Cluster.exist?(Configuration.this_aliaz)
+    end
+
+    it "returns false when node doesn't exist" do
+      refute Cluster.exist?("Jupiter")
+    end
+  end
+
   describe ".register_node" do
     context "when node doesn't exist" do
       it "adds node to cluster" do

@@ -19,6 +19,10 @@ defmodule Matrix.Cluster do
     GenServer.cast(__MODULE__, {:unregister_node, aliaz})
   end
 
+  def exist?(aliaz) do
+    GenServer.call(__MODULE__, {:exist?, aliaz})
+  end
+
   def clear do
     GenServer.cast(__MODULE__, {:clear})
   end
@@ -43,6 +47,10 @@ defmodule Matrix.Cluster do
 
   def handle_cast({:clear}, _nodes) do
     {:noreply, this_node()}
+  end
+
+  def handle_call({:exist?, aliaz}, _from, nodes) do
+    {:reply, Map.has_key?(nodes, aliaz), nodes}
   end
 
   def init(_) do
