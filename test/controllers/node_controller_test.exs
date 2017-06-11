@@ -2,6 +2,8 @@ defmodule Matrix.NodeControllerTest do
   use Matrix.ConnCase
 
   setup %{conn: conn} do
+    Matrix.Cluster.clear
+
     conn = put_req_header(conn, "content-type", "application/json")
 
     {:ok, conn: conn}
