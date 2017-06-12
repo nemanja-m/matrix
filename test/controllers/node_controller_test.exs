@@ -3,6 +3,8 @@ defmodule Matrix.NodeControllerTest do
 
   import Mock
 
+  alias Matrix.{Cluster, Configuration}
+
   setup %{conn: conn} do
     Matrix.Cluster.clear
 
@@ -33,6 +35,30 @@ defmodule Matrix.NodeControllerTest do
           assert response(conn, 400)
         end
       end
+    end
+  end
+
+  describe "GET /node" do
+    it "returns 200", %{conn: conn} do
+      conn = get conn, "/node"
+
+      assert response(conn, 200)
+    end
+
+    it "returns 'alive'" do
+      conn = get build_conn(), "/node"
+
+      assert conn.resp_body =~ "alive"
+    end
+  end
+
+  describe "DELETE /node" do
+    it "unregisters node from cluster" do
+      Cluster.register_node(aliaz: "Neptune", address: "localhost:3000")
+      assert (Cluster.nodes |> Enum.count) == 2
+
+      conn = delete conn, "/node/Neptune"
+      assert (Cluster.nodes |> Enum.count) == 1
     end
   end
 end
