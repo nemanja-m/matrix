@@ -35,7 +35,7 @@ defmodule Matrix.NodeController do
   end
   defp check_node(conn, false), do: conn
   defp check_node(conn, _) do
-    agent_centers = conn.body_params["data"]
+    agent_centers = conn.params["data"]
 
     conn
     |> check_node(

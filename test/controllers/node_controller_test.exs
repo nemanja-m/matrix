@@ -1,6 +1,8 @@
 defmodule Matrix.NodeControllerTest do
   use Matrix.ConnCase
 
+  import Mock
+
   setup %{conn: conn} do
     Matrix.Cluster.clear
 
@@ -9,23 +11,26 @@ defmodule Matrix.NodeControllerTest do
     {:ok, conn: conn}
   end
 
+  @agent_center %{aliaz: "Neptune", address: "localhost:3000"}
+
   describe "POST /node" do
     context "when node is master" do
 
       context "with successful handshake" do
         it "registers node", %{conn: conn} do
-          conn = post conn, "/node", %{aliaz: "Neptune", address: "localhost:3000"}
+          with_mock HTTPoison, [post!: fn (_, _, _) -> "ok" end] do
+            conn = post conn, "/node", data: [@agent_center]
 
-          assert json_response(conn, 200)
+            assert response(conn, 200)
+          end
         end
       end
 
-      @tag :skip
       context "with unsuccessful handshake" do
         it "doesn't register node", %{conn: conn} do
-          conn = post conn, "/node", %{aliaz: "Neptune", address: "localhost:3000"}
+          conn = post conn, "/node", data: [%{aliaz: "Mars", address: "MilkyWay"}]
 
-          assert json_response(conn, 500)
+          assert response(conn, 400)
         end
       end
     end
