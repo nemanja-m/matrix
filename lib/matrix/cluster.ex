@@ -41,16 +41,16 @@ defmodule Matrix.Cluster do
     end
   end
 
+  def handle_call({:exist?, aliaz}, _from, nodes) do
+    {:reply, Map.has_key?(nodes, aliaz), nodes}
+  end
+
   def handle_cast({:unregister_node, aliaz}, nodes) do
     {:noreply, Map.delete(nodes, aliaz)}
   end
 
   def handle_cast({:clear}, _nodes) do
     {:noreply, this_node()}
-  end
-
-  def handle_call({:exist?, aliaz}, _from, nodes) do
-    {:reply, Map.has_key?(nodes, aliaz), nodes}
   end
 
   def init(_) do

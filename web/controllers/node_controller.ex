@@ -20,6 +20,13 @@ defmodule Matrix.NodeController do
     |> send_resp(200, "alive")
   end
 
+  def unregister(conn, %{"aliaz" => aliaz}) do
+    ConnectionManager.clear_agent_center_data(aliaz)
+
+    conn
+    |> send_resp(200, "")
+  end
+
   defp check_node(conn, true) do
     conn
     |> put_status(:bad_request)

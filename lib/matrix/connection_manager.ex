@@ -71,4 +71,22 @@ defmodule Matrix.ConnectionManager do
     end)
   end
 
+  def remove_agent_center(aliaz) do
+    clear_agent_center_data(aliaz)
+
+    agent_centers
+    |> Enum.each(fn %AgentCenter{address: address} ->
+      url = "#{address}/node/#{aliaz}"
+
+      HTTPoison.delete(url)
+    end)
+  end
+
+  def clear_agent_center_data(aliaz) do
+    Cluster.unregister_node(aliaz)
+
+    Logger.warn "'#{aliaz}' removed from cluster"
+
+    # TODO Delete agent data
+  end
 end
