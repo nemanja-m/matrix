@@ -1,7 +1,7 @@
 defmodule Matrix.ConnectionManager do
-  alias Matrix.{Configuration, AgentCenter, Cluster}
-
   require Logger
+
+  alias Matrix.{Configuration, AgentCenter, Cluster}
 
   def register_self do
     register_self(master_node: Configuration.is_master_node?)
