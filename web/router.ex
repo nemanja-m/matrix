@@ -8,6 +8,7 @@ defmodule Matrix.Router do
   scope "/", Matrix do
     pipe_through :api
 
+    get  "/node", NodeController, :heartbeat
     post "/node", NodeController, :register
   end
 end

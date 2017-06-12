@@ -15,6 +15,11 @@ defmodule Matrix.NodeController do
     |> send_resp(200, "")
   end
 
+  def heartbeat(conn, _params) do
+    conn
+    |> send_resp(200, "alive")
+  end
+
   defp check_node(conn, true) do
     conn
     |> put_status(:bad_request)

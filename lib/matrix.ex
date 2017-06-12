@@ -7,7 +7,8 @@ defmodule Matrix do
     # Define workers and child supervisors to be supervised
     children = [
       supervisor(Matrix.Endpoint, []),
-      worker(Matrix.Cluster, [])
+      worker(Matrix.Cluster, []),
+      worker(Matrix.Heartbeat, [])
     ]
 
     opts = [strategy: :one_for_one, name: Matrix.Supervisor]
