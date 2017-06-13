@@ -4,8 +4,10 @@ defmodule Matrix.Cluster do
   alias Matrix.{Configuration, AgentCenter}
 
   def start_link(_options \\ []) do
-    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+    GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
+
+  # Client API
 
   def nodes do
     GenServer.call(__MODULE__, {:nodes})
@@ -26,6 +28,8 @@ defmodule Matrix.Cluster do
   def clear do
     GenServer.cast(__MODULE__, {:clear})
   end
+
+  # Server callbacks
 
   def handle_call({:nodes}, _from, nodes) do
     {:reply, nodes_list(nodes), nodes}

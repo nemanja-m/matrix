@@ -3,10 +3,10 @@ defmodule Matrix.NodeControllerTest do
 
   import Mock
 
-  alias Matrix.{Cluster, Configuration}
+  alias Matrix.Cluster
 
   setup %{conn: conn} do
-    Matrix.Cluster.clear
+    Cluster.clear
 
     conn = put_req_header(conn, "content-type", "application/json")
 
@@ -53,11 +53,11 @@ defmodule Matrix.NodeControllerTest do
   end
 
   describe "DELETE /node" do
-    it "unregisters node from cluster" do
+    it "unregisters node from cluster", %{conn: conn} do
       Cluster.register_node(aliaz: "Neptune", address: "localhost:3000")
       assert (Cluster.nodes |> Enum.count) == 2
 
-      conn = delete conn, "/node/Neptune"
+      delete conn, "/node/Neptune"
       assert (Cluster.nodes |> Enum.count) == 1
     end
   end
