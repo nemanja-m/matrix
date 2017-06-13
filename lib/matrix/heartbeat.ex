@@ -6,7 +6,7 @@ defmodule Matrix.Heartbeat do
 
   require Logger
 
-  alias Matrix.{Cluster, Configuration, ConnectionManager, AgentCenter}
+  alias Matrix.ConnectionManager
 
   # 1 minute
   @period 1000 * 60
@@ -22,7 +22,7 @@ defmodule Matrix.Heartbeat do
   end
 
   def handle_info(:work, state) do
-    agent_centers()
+    ConnectionManager.agent_centers
     |> Enum.each(fn node ->
       url = "#{node.address}/node"
 
@@ -52,10 +52,4 @@ defmodule Matrix.Heartbeat do
     Process.send_after(self(), :work, @period)
   end
 
-  defp agent_centers do
-    Cluster.nodes
-    |> Enum.reject(fn %AgentCenter{aliaz: aliaz} ->
-      Configuration.this_aliaz == aliaz
-    end)
-  end
 end

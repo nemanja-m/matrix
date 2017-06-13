@@ -1,7 +1,7 @@
 defmodule Matrix.ConnectionManager do
   require Logger
 
-  alias Matrix.{Configuration, AgentCenter, Cluster}
+  alias Matrix.{Configuration, AgentCenter, Cluster, Agents}
 
   def register_self do
     register_self(master_node: Configuration.is_master_node?)
@@ -41,6 +41,33 @@ defmodule Matrix.ConnectionManager do
     Logger.warn "Agent center '#{aliaz}' registered"
   end
 
+  def remove_agent_center(aliaz) do
+    clear_agent_center_data(aliaz)
+
+    agent_centers()
+    |> Enum.each(fn %AgentCenter{address: address} ->
+      url = "#{address}/node/#{aliaz}"
+
+      HTTPoison.delete(url)
+    end)
+  end
+
+  def clear_agent_center_data(aliaz) do
+    Cluster.unregister_node(aliaz)
+    Agents.delete_types(agent_center: aliaz)
+
+    Logger.warn "'#{aliaz}' removed from cluster"
+
+    # TODO Delete agent data
+  end
+
+  def agent_centers do
+    Cluster.nodes
+    |> Enum.reject(fn %AgentCenter{aliaz: aliaz} ->
+      Configuration.this_aliaz == aliaz
+    end)
+  end
+
   defp update_cluster(new_center) do
     agent_centers()
     |> Enum.each(fn %AgentCenter{address: address} ->
@@ -64,29 +91,4 @@ defmodule Matrix.ConnectionManager do
     HTTPoison.post!(url, body, headers)
   end
 
-  defp agent_centers do
-    Cluster.nodes
-    |> Enum.reject(fn %AgentCenter{aliaz: aliaz} ->
-      Configuration.this_aliaz == aliaz
-    end)
-  end
-
-  def remove_agent_center(aliaz) do
-    clear_agent_center_data(aliaz)
-
-    agent_centers
-    |> Enum.each(fn %AgentCenter{address: address} ->
-      url = "#{address}/node/#{aliaz}"
-
-      HTTPoison.delete(url)
-    end)
-  end
-
-  def clear_agent_center_data(aliaz) do
-    Cluster.unregister_node(aliaz)
-
-    Logger.warn "'#{aliaz}' removed from cluster"
-
-    # TODO Delete agent data
-  end
 end

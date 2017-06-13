@@ -110,4 +110,15 @@ defmodule ConnectionManagerTest do
       refute venera in Cluster.nodes
     end
   end
+
+  describe ".agent_centers" do
+    it "returns list of other agent centers" do
+      venera = %AgentCenter{aliaz: "Venera", address: "localhost:5000"}
+
+      Cluster.register_node(aliaz: venera.aliaz, address: venera.address)
+      assert venera in Cluster.nodes
+
+      assert ConnectionManager.agent_centers == [venera]
+    end
+  end
 end
