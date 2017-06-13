@@ -28,6 +28,7 @@ defmodule Matrix.Web do
 
       import Matrix.Router.Helpers
       import Matrix.Gettext
+      import Matrix.Controllers.Helpers
     end
   end
 

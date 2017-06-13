@@ -17,7 +17,4 @@ defmodule Matrix.AgentController do
     |> json("ok")
   end
 
-  defp set_headers(conn, _) do
-    conn |> put_resp_header("content-type", "application/json")
-  end
 end

@@ -3,6 +3,7 @@ defmodule Matrix.NodeController do
 
   alias Matrix.{Cluster, ConnectionManager}
 
+  plug :set_headers
   plug :check_node when action in [:register]
 
   def register(conn, %{"data" => agent_centers}) do
@@ -12,19 +13,19 @@ defmodule Matrix.NodeController do
     end)
 
     conn
-    |> send_resp(200, "")
+    |> json("ok")
   end
 
   def heartbeat(conn, _params) do
     conn
-    |> send_resp(200, "alive")
+    |> json("alive")
   end
 
   def unregister(conn, %{"aliaz" => aliaz}) do
     ConnectionManager.clear_agent_center_data(aliaz)
 
     conn
-    |> send_resp(200, "")
+    |> json("ok")
   end
 
   defp check_node(conn, true) do
