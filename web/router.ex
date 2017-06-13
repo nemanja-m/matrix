@@ -12,6 +12,7 @@ defmodule Matrix.Router do
     post   "/node", NodeController, :register
     delete "/node/:aliaz", NodeController, :unregister
 
-    get "/agents/classes", AgentController, :get_classes
+    get  "/agents/classes", AgentController, :get_classes
+    post "/agents/classes", AgentController, :set_classes
   end
 end
