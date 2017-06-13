@@ -1,7 +1,7 @@
 defmodule Matrix.NodeController do
   use Matrix.Web, :controller
 
-  alias Matrix.{Cluster, ConnectionManager}
+  alias Matrix.{Cluster, ConnectionManager, AgentCenter}
 
   plug :set_headers
   plug :check_node when action in [:register]
@@ -9,7 +9,7 @@ defmodule Matrix.NodeController do
   def register(conn, %{"data" => agent_centers}) do
     agent_centers
     |> Enum.each(fn %{"aliaz" => aliaz, "address" => address} ->
-      ConnectionManager.register_agent_center(aliaz: aliaz, address: address)
+      ConnectionManager.register_agent_center(%AgentCenter{aliaz: aliaz, address: address})
     end)
 
     conn

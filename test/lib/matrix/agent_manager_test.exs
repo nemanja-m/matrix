@@ -12,8 +12,8 @@ defmodule Matrix.AgentManagerTest do
 
   describe ".self_agent_types" do
     it "returns agent types on this agent center" do
-      Agents.add_types(agent_center: Configuration.this_aliaz, types: [@ping])
-      Agents.add_types(agent_center: "Neptune", types: [@pong])
+      Agents.add_types(Configuration.this_aliaz, [@ping])
+      Agents.add_types("Neptune", [@pong])
 
       assert AgentManager.self_agent_types == [@ping]
     end
@@ -28,8 +28,8 @@ defmodule Matrix.AgentManagerTest do
 
       AgentManager.add_agent_types(types_map)
 
-      assert Agents.types(for: "Mars") == [@ping]
-      assert Agents.types(for: "Neptune") == [@pong]
+      assert Agents.types_for("Mars") == [@ping]
+      assert Agents.types_for("Neptune") == [@pong]
     end
   end
 end

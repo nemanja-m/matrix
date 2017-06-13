@@ -12,8 +12,11 @@ defmodule ConnectionManagerTest do
   end
 
   setup do
-    Cluster.clear
+    Cluster.reset
   end
+
+  @neptune %AgentCenter{aliaz: "Neptune", address: "localhost:3000"}
+  @venera  %AgentCenter{aliaz: "Venera", address: "localhost:5000"}
 
   describe ".register_self" do
     context "given node is not master" do
@@ -51,21 +54,21 @@ defmodule ConnectionManagerTest do
   describe ".register_agent_center" do
     it "registers given node to cluster" do
       with_mock HTTPoison, [post!: fn (_, _, _) -> {:ok, :response} end] do
-        ConnectionManager.register_agent_center(aliaz: "Neptune", address: "localhost:3000")
+        ConnectionManager.register_agent_center(@neptune)
 
-        assert %AgentCenter{aliaz: "Neptune", address: "localhost:3000"} in Cluster.nodes
+        assert @neptune in Cluster.nodes
       end
     end
 
     context "when node is master" do
       it "updates other agent centers in cluster with new center" do
         with_mock HTTPoison, [post!: fn (_, _, _) -> {:ok, :response} end] do
-          Cluster.register_node(aliaz: "Venera", address: "localhost:5000")
+          Cluster.register_node(@venera)
 
-          ConnectionManager.register_agent_center(aliaz: "Neptune", address: "localhost:3000")
+          ConnectionManager.register_agent_center(@neptune)
 
-          url = "localhost:5000/node"
-          body = Poison.encode! %{data: [%{aliaz: "Neptune", address: "localhost:3000"}]}
+          url = "#{@venera.address}/node"
+          body = Poison.encode! %{data: [Map.from_struct(@neptune)]}
           headers = [{"Content-Type", "application/json"}]
 
           assert called HTTPoison.post!(url, body, headers)
@@ -74,12 +77,12 @@ defmodule ConnectionManagerTest do
 
       it "updates new agent center with other agent centers" do
         with_mock HTTPoison, [post!: fn (_, _, _) -> {:ok, :response} end] do
-          Cluster.register_node(aliaz: "Venera", address: "localhost:5000")
+          Cluster.register_node(@venera)
 
-          ConnectionManager.register_agent_center(aliaz: "Neptune", address: "localhost:3000")
+          ConnectionManager.register_agent_center(@neptune)
 
-          url = "localhost:3000/node"
-          body = Poison.encode! %{data: [Configuration.this, %{aliaz: "Venera", address: "localhost:5000"}]}
+          url = "#{@neptune.address}/node"
+          body = Poison.encode! %{data: [Configuration.this, Map.from_struct(@venera)]}
           headers = [{"Content-Type", "application/json"}]
 
           assert called HTTPoison.post!(url, body, headers)
@@ -91,34 +94,31 @@ defmodule ConnectionManagerTest do
   describe ".remove_agent_center" do
     it "sends DELETE /node/:aliaz to all agent centers" do
       with_mock HTTPoison, [delete: fn (_) -> {:ok, :response} end] do
-        Cluster.register_node(aliaz: "Venera", address: "localhost:5000")
-        ConnectionManager.remove_agent_center("Neptune")
+        Cluster.register_node(@venera)
+        Cluster.register_node(@neptune)
+        ConnectionManager.remove_agent_center(@neptune.aliaz)
 
-        assert called HTTPoison.delete("localhost:5000/node/Neptune")
+        assert called HTTPoison.delete("#{@venera.address}/node/Neptune")
       end
     end
   end
 
   describe ".clear_agent_center_data" do
     it "unregisters node from cluster" do
-      venera = %AgentCenter{aliaz: "Venera", address: "localhost:5000"}
+      Cluster.register_node(@venera)
+      assert @venera in Cluster.nodes
 
-      Cluster.register_node(aliaz: venera.aliaz, address: venera.address)
-      assert venera in Cluster.nodes
-
-      ConnectionManager.clear_agent_center_data(venera.aliaz)
-      refute venera in Cluster.nodes
+      ConnectionManager.clear_agent_center_data(@venera.aliaz)
+      refute @venera in Cluster.nodes
     end
   end
 
   describe ".agent_centers" do
     it "returns list of other agent centers" do
-      venera = %AgentCenter{aliaz: "Venera", address: "localhost:5000"}
+      Cluster.register_node(@venera)
+      assert @venera in Cluster.nodes
 
-      Cluster.register_node(aliaz: venera.aliaz, address: venera.address)
-      assert venera in Cluster.nodes
-
-      assert ConnectionManager.agent_centers == [venera]
+      assert ConnectionManager.agent_centers == [@venera]
     end
   end
 end

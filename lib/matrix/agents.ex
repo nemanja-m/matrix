@@ -15,8 +15,23 @@ defmodule Matrix.Agents do
   use GenServer
 
   defmodule State do
+    @moduledoc """
+    Represents state of agents in cluster.
+
+    * agent_types - All supported agent types in cluster.
+
+      Map where key is agent center alias and value is list of agent types
+      available on that agent center.
+
+    * running_agents - Running agents in cluster.
+
+      Map where key is agent center alias and value is list of Agent structs
+      running on that agent center.
+
+    """
     defstruct agent_types: %{}, running_agents: %{}
-    @type t :: %__MODULE__{agent_types: map, running_agents: map}
+
+    @type t :: %__MODULE__{agent_types: Map.t, running_agents: Map.t}
   end
 
   def start_link(_options \\ []) do
@@ -29,37 +44,43 @@ defmodule Matrix.Agents do
   Adds list of agent types to given agent center.
 
   Args:
-    * `aliaz` - Alias of agent center
+    * `agent_center` - Alias of agent center
     * `types` - List of supported agent types
 
   ## Example
 
-    Agents.add_types(agent_center: "Mars", types: [%AgentType{name: "Ping", module: "Test"}])
+    Agents.add_types("Mars", [%AgentType{name: "Ping", module: "Test"}])
 
   """
-  @spec add_types(Keyword.t) :: :ok
-  def add_types(agent_center: aliaz, types: types) do
-    GenServer.cast(__MODULE__, {:add_types, aliaz, types})
+  @spec add_types(agent_center :: String.t, types :: list[Matrix.AgentType.t]) :: :ok
+  def add_types(agent_center, types) do
+    GenServer.cast(__MODULE__, {:add_types, agent_center, types})
   end
 
   @doc """
   Deletes agent types of given agent center.
 
   Args:
-    * `aliaz` - Alias of agent center
+    * `agent_center` - Alias of agent center
 
   ## Example
 
-    Agents.delete_types(agent_center: "Mars")
+    Agents.delete_types_for("Mars")
 
   """
-  @spec delete_types(Keyword.t) :: :ok
-  def delete_types(agent_center: aliaz) do
-    GenServer.cast(__MODULE__, {:delete_types, aliaz})
+  @spec delete_types_for(agent_center :: String.t) :: :ok
+  def delete_types_for(agent_center) do
+    GenServer.cast(__MODULE__, {:delete_types, agent_center})
   end
 
   @doc """
   Returns list of all supported agent types in cluster.
+
+  ## Example
+
+    Agents.types
+    # => [`%AgentType{name: "Ping", module: "Agents"}]
+
   """
   @spec types :: list(Matrix.AgentType.t)
   def types do
@@ -68,10 +89,18 @@ defmodule Matrix.Agents do
 
   @doc """
   Returns list of supported agent types for given agent center.
+
+  ## Example
+
+    Agents.add_types("Mars", [%AgentType{name: "Ping", module: "Agents"}])
+
+    Agents.types_for("Mars")
+    # => [`%AgentType{name: "Ping", module: "Agents"}]
+
   """
-  @spec types(Keyword.t) :: list(Matrix.AgentType.t)
-  def types(for: aliaz) do
-    GenServer.call(__MODULE__, {:types, aliaz})
+  @spec types_for(agent_center :: String.t) :: list(Matrix.AgentType.t)
+  def types_for(agent_center) do
+    GenServer.call(__MODULE__, {:types, agent_center})
   end
 
   @doc """

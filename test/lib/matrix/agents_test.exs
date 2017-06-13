@@ -12,52 +12,53 @@ defmodule Matrix.AgentsTest do
 
   describe ".add_types" do
     it "adds new types for given agent center" do
-      Agents.add_types(agent_center: "Mars", types: [@ping])
+      Agents.add_types("Mars", [@ping])
 
       assert Agents.types == [@ping]
 
-      Agents.add_types(agent_center: "Neptune", types: [@pong])
+      Agents.add_types("Neptune", [@pong])
 
       assert Agents.types == [@ping, @pong]
     end
   end
 
-  describe ".delete_types" do
+  describe ".delete_types_for" do
     it "deletes types for given agent center" do
-      Agents.add_types(agent_center: "Mars", types: [@ping])
-      Agents.add_types(agent_center: "Neptune", types: [@pong])
+      Agents.add_types("Mars", [@ping])
+      Agents.add_types("Neptune", [@pong])
 
       assert Agents.types == [@ping, @pong]
 
-      Agents.delete_types(agent_center: "Mars")
+      Agents.delete_types_for("Mars")
 
       assert Agents.types == [@pong]
-      refute Agents.types(for: "Mars")
+      refute Agents.types_for("Mars")
     end
   end
 
-  describe ".types/0" do
+  describe ".types" do
     it "returns list of all agent types in cluster" do
-      Agents.add_types(agent_center: "Mars", types: [@ping])
-      Agents.add_types(agent_center: "Neptune", types: [@pong])
+      Agents.add_types("Mars", [@ping])
+      Agents.add_types("Neptune", [@pong])
 
       assert Agents.types == [@ping, @pong]
     end
   end
 
-  describe ".types/1" do
+  describe ".types_for" do
     it "returns agent types for given agent center" do
-      Agents.add_types(agent_center: "Mars", types: [@ping])
-      Agents.add_types(agent_center: "Neptune", types: [@pong])
+      Agents.add_types("Mars", [@ping])
+      Agents.add_types("Neptune", [@pong])
 
-      assert Agents.types(for: "Mars") == [@ping]
+      assert Agents.types_for("Mars") == [@ping]
+      assert Agents.types_for("Neptune") == [@pong]
     end
   end
 
   describe ".reset" do
     it "resets all data" do
-      Agents.add_types(agent_center: "Mars", types: [@ping])
-      Agents.add_types(agent_center: "Neptune", types: [@pong])
+      Agents.add_types("Mars", [@ping])
+      Agents.add_types("Neptune", [@pong])
 
       assert Agents.types == [@ping, @pong]
 

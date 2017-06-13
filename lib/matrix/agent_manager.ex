@@ -3,7 +3,7 @@ defmodule Matrix.AgentManager do
   alias Matrix.{Configuration, Agents, AgentType}
 
   def self_agent_types do
-    Agents.types(for: Configuration.this_aliaz)
+    Agents.types_for(Configuration.this_aliaz)
   end
 
   def add_agent_types(types_map) do
@@ -14,7 +14,7 @@ defmodule Matrix.AgentManager do
           %AgentType{name: name, module: module}
         end)
 
-      Agents.add_types(agent_center: aliaz, types: agent_types)
+      Agents.add_types(aliaz, agent_types)
     end)
   end
 end

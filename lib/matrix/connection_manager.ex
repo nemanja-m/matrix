@@ -30,13 +30,13 @@ defmodule Matrix.ConnectionManager do
   end
   defp register_self(master_node: true), do: nil
 
-  def register_agent_center(aliaz: aliaz, address: address) do
+  def register_agent_center(agent_center = %AgentCenter{aliaz: aliaz, address: address}) do
     if Configuration.is_master_node? do
-      update_cluster(%AgentCenter{aliaz: aliaz, address: address})
+      update_cluster(agent_center)
       update_new_agent_center(address)
     end
 
-    Cluster.register_node(aliaz: aliaz, address: address)
+    Cluster.register_node(agent_center)
 
     Logger.warn "Agent center '#{aliaz}' registered"
   end
@@ -54,7 +54,7 @@ defmodule Matrix.ConnectionManager do
 
   def clear_agent_center_data(aliaz) do
     Cluster.unregister_node(aliaz)
-    Agents.delete_types(agent_center: aliaz)
+    Agents.delete_types_for(aliaz)
 
     Logger.warn "'#{aliaz}' removed from cluster"
 

@@ -4,8 +4,10 @@ defmodule Matrix.ClusterTest do
   alias Matrix.{Cluster, Configuration, AgentCenter}
 
   setup do
-    Cluster.clear
+    Cluster.reset
   end
+
+  @neptune %AgentCenter{aliaz: "Neptune", address: "MilkyWay"}
 
   describe ".start_link" do
     it "initializes cluster with this node" do
@@ -19,12 +21,12 @@ defmodule Matrix.ClusterTest do
     end
   end
 
-  describe ".clear" do
+  describe ".reset" do
     it "deletes all nodes except this" do
-      :ok = Cluster.register_node(aliaz: "Neptune", address: "MilkyWay")
-      assert Cluster.nodes == [Configuration.this, %AgentCenter{aliaz: "Neptune", address: "MilkyWay"}]
+      :ok = Cluster.register_node(@neptune)
+      assert Cluster.nodes == [Configuration.this, @neptune]
 
-      Cluster.clear
+      Cluster.reset
       assert Cluster.nodes == [Configuration.this]
     end
   end
@@ -42,19 +44,14 @@ defmodule Matrix.ClusterTest do
   describe ".register_node" do
     context "when node doesn't exist" do
       it "adds node to cluster" do
-        assert Cluster.register_node(aliaz: "Neptune", address: "MilkyWay") == :ok
-        assert Cluster.nodes == [Configuration.this, %AgentCenter{aliaz: "Neptune", address: "MilkyWay"}]
+        assert Cluster.register_node(@neptune) == :ok
+        assert Cluster.nodes == [Configuration.this, @neptune]
       end
     end
 
     context "when node already exist" do
       it "doesn't add node to cluster" do
-        node = [
-          {:aliaz, Configuration.this_aliaz},
-          {:address, Configuration.this_address}
-        ]
-
-        assert Cluster.register_node(node) == :already_exist
+        assert Cluster.register_node(Configuration.this) == {:error, :exists}
         assert Cluster.nodes == [Configuration.this]
       end
     end

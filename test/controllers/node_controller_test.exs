@@ -3,17 +3,17 @@ defmodule Matrix.NodeControllerTest do
 
   import Mock
 
-  alias Matrix.Cluster
+  alias Matrix.{Cluster, AgentCenter}
 
   setup %{conn: conn} do
-    Cluster.clear
+    Cluster.reset
 
     conn = put_req_header(conn, "content-type", "application/json")
 
     {:ok, conn: conn}
   end
 
-  @agent_center %{aliaz: "Neptune", address: "localhost:3000"}
+  @neptune %AgentCenter{aliaz: "Neptune", address: "localhost:3000"}
 
   describe "POST /node" do
     context "when node is master" do
@@ -21,7 +21,7 @@ defmodule Matrix.NodeControllerTest do
       context "with successful handshake" do
         it "registers node", %{conn: conn} do
           with_mock HTTPoison, [post!: fn (_, _, _) -> "ok" end] do
-            conn = post conn, "/node", data: [@agent_center]
+            conn = post conn, "/node", data: [@neptune |> Map.from_struct]
 
             assert response(conn, 200)
           end
@@ -54,7 +54,7 @@ defmodule Matrix.NodeControllerTest do
 
   describe "DELETE /node" do
     it "unregisters node from cluster", %{conn: conn} do
-      Cluster.register_node(aliaz: "Neptune", address: "localhost:3000")
+      Cluster.register_node(@neptune)
       assert (Cluster.nodes |> Enum.count) == 2
 
       delete conn, "/node/Neptune"
