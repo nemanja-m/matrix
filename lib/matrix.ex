@@ -8,6 +8,7 @@ defmodule Matrix do
     children = [
       supervisor(Matrix.Endpoint, []),
       worker(Matrix.Cluster, []),
+      worker(Matrix.Agents, []),
       worker(Matrix.Heartbeat, [])
     ]
 
