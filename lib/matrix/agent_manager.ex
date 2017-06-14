@@ -1,6 +1,6 @@
 defmodule Matrix.AgentManager do
 
-  alias Matrix.{Configuration, Agents, AgentType, Agent, AID}
+  alias Matrix.{Configuration, Agents, AgentType, Agent}
 
   def self_agent_types do
     Agents.types_for(Configuration.this_aliaz)

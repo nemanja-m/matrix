@@ -24,7 +24,7 @@ defmodule Matrix.Cluster do
       %State{nodes: %{"Mars" => "localhost:4000"}
 
     """
-    defstruct nodes: Map.put %{}, Configuration.this_aliaz, Configuration.this_address
+    defstruct nodes: nil
 
     @type t :: %__MODULE__{nodes: Map.t}
   end
@@ -144,11 +144,11 @@ defmodule Matrix.Cluster do
   end
 
   def handle_cast({:reset}, _nodes) do
-    {:noreply, %State{}}
+    {:noreply, init_state()}
   end
 
   def init(_) do
-    {:ok, %State{}}
+    {:ok, init_state()}
   end
 
   defp nodes_list(state) do
@@ -156,6 +156,10 @@ defmodule Matrix.Cluster do
     |> Enum.map(fn {aliaz, address} ->
       %AgentCenter{aliaz: aliaz, address: address}
     end)
+  end
+
+  defp init_state do
+    %State{nodes: %{Configuration.this_aliaz => Configuration.this_address}}
   end
 
 end
