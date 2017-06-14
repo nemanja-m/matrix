@@ -28,7 +28,8 @@ defmodule Matrix.Heartbeat do
 
       wait lin_backoff(500, 1) |> take(1) do
         case HTTPoison.get(url) do
-          {:ok, %HTTPoison.Response{status_code: 200}} -> true
+          {:ok, %HTTPoison.Response{status_code: 200}} ->
+            true
 
           _ ->
             Logger.warn "Retrying ..."

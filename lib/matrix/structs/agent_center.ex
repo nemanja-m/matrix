@@ -1,5 +1,10 @@
 defmodule Matrix.AgentCenter do
-  @enforce_keys [:aliaz, :address]
+  @moduledoc """
+  Represents agent center with alias ad address on network.
+  """
 
+  @derive [Poison.Encoder]
   defstruct [:aliaz, :address]
+
+  @type t :: %__MODULE__{aliaz: String.t, address: String.t}
 end

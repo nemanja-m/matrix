@@ -104,6 +104,62 @@ defmodule Matrix.Agents do
   end
 
   @doc """
+  Returns all running agents on cluster.
+
+  ## Example
+
+    Agents.running
+    # => `[%Agent{id: %AID{}]`
+
+  """
+  @spec running :: list[Matrix.Agent.t]
+  def running do
+    GenServer.call(__MODULE__, {:running})
+  end
+
+  @doc """
+  Returns all running agents on given agent center.
+
+  ## Example
+
+    Agents.running_on("Mars")
+    # => `[%Agent{id: %AID{}]`
+
+  """
+  @spec running_on(agent_center :: String.t) :: list[Matrix.Agent.t]
+  def running_on(agent_center) do
+    GenServer.call(__MODULE__, {:running, agent_center})
+  end
+
+  @doc """
+  Returns map where key is agent center alias,
+  value is list of running agents on that center.
+
+  ## Example
+
+    Agents.running_per_agent_center
+    # => `%{"Mars" => [%Agent{id: %AID{}}]}`
+
+  """
+  @spec running_per_agent_center :: Map.t
+  def running_per_agent_center do
+    GenServer.call(__MODULE__, {:running_per_agent_center})
+  end
+
+  @doc """
+  Adds new agent for given agent center.
+
+  ## Example
+
+    Agents.add_running("Mars", %Agent{})
+
+  """
+  @spec add_running(agent_center :: String.t, running_agents :: list(Matrix.Agent)) :: :ok
+  def add_running(agent_center, running_agents) do
+    GenServer.cast(__MODULE__, {:add_running, agent_center, running_agents})
+  end
+
+  @doc """
   Resets data about agent types and running agents.
   """
   @spec reset :: :ok
@@ -126,10 +182,36 @@ defmodule Matrix.Agents do
     {:reply, state.agent_types[aliaz], state}
   end
 
+  def handle_call({:running}, _from, state) do
+    running_agents =
+      state.running_agents
+      |> Enum.reduce([], fn {_, agents}, acc ->
+        acc ++ agents
+      end)
+
+    {:reply, running_agents, state}
+  end
+
+  def handle_call({:running, agent_center}, _from, state) do
+    {:reply, state.running_agents[agent_center] || [], state}
+  end
+
+  def handle_call({:running_per_agent_center}, _from, state) do
+    {:reply, state.running_agents, state}
+  end
+
   def handle_cast({:add_types, aliaz, types}, state) do
     types = state.agent_types |> Map.put_new(aliaz, types)
 
     {:noreply, %State{agent_types: types, running_agents: state.running_agents}}
+  end
+
+  def handle_cast({:add_running, aliaz, running_agents}, state) do
+    agents = (state.running_agents[aliaz] || []) ++ running_agents
+
+    running_agents_map = Map.put(state.running_agents, aliaz, agents)
+
+    {:noreply, %State{agent_types: state.agent_types, running_agents: running_agents_map}}
   end
 
   def handle_cast({:delete_types, aliaz}, state) do
@@ -145,4 +227,5 @@ defmodule Matrix.Agents do
   def init(_) do
     {:ok, %State{}}
   end
+
 end

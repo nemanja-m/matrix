@@ -3,7 +3,8 @@ defmodule Matrix.AID do
   Represents agent id module.
   """
 
-  defstruct name: nil, host: nil, type: nil
+  @derive [Poison.Encoder]
+  defstruct [:name, :host, :type]
 
   @type t :: %__MODULE__{name: String.t, host: Matrix.AgentCenter.t, type: Matrix.AgentType.t}
 end

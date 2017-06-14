@@ -1,6 +1,6 @@
 defmodule Matrix.AgentManager do
 
-  alias Matrix.{Configuration, Agents, AgentType}
+  alias Matrix.{Configuration, Agents, AgentType, Agent, AID}
 
   def self_agent_types do
     Agents.types_for(Configuration.this_aliaz)
@@ -15,6 +15,16 @@ defmodule Matrix.AgentManager do
         end)
 
       Agents.add_types(aliaz, agent_types)
+    end)
+  end
+
+  def add_running_agents(running_agents_map) do
+    running_agents_map
+    |> Enum.each(fn {aliaz, agents} ->
+      running_agents =
+        Enum.map(agents, fn hash -> Agent.from_hash(hash) end)
+
+      Agents.add_running(aliaz, running_agents)
     end)
   end
 end

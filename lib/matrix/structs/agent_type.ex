@@ -3,7 +3,8 @@ defmodule Matrix.AgentType do
   Represents agent type struct with :name and :module fields.
   """
 
-  defstruct name: nil, module: nil
+  @derive [Poison.Encoder]
+  defstruct [:name, :module]
 
   @type t :: %__MODULE__{name: String.t, module: String.t}
 end

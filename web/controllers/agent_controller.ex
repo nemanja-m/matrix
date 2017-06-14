@@ -17,4 +17,10 @@ defmodule Matrix.AgentController do
     |> json("ok")
   end
 
+  def set_running(conn, %{"data" => data}) do
+    AgentManager.add_running_agents(data)
+
+    conn
+    |> json("ok")
+  end
 end
