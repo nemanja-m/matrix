@@ -5,8 +5,5 @@ defmodule Matrix.AgentType do
 
   defstruct name: nil, module: nil
 
-  @typedoc """
-  Type that represents AgentType struct with :name and :module as Strings
-  """
   @type t :: %__MODULE__{name: String.t, module: String.t}
 end
