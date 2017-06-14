@@ -179,7 +179,7 @@ defmodule Matrix.Agents do
     {:reply, types, state}
   end
   def handle_call({:types, aliaz}, _from, state) do
-    {:reply, state.agent_types[aliaz], state}
+    {:reply, state.agent_types[aliaz] || [], state}
   end
 
   def handle_call({:running}, _from, state) do

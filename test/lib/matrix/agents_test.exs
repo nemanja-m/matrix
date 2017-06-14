@@ -74,6 +74,7 @@ defmodule Matrix.AgentsTest do
 
       assert Agents.types_for("Mars") == [@ping]
       assert Agents.types_for("Neptune") == [@pong]
+      assert Agents.types_for("Venera") == []
     end
   end
 
