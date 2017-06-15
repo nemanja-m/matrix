@@ -24,8 +24,7 @@ defmodule Matrix.Mixfile do
         :cowboy,
         :logger,
         :gettext,
-        :httpoison,
-        :retry
+        :httpoison
       ]
     ]
   end
@@ -43,7 +42,6 @@ defmodule Matrix.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:httpoison, "~> 0.11.1"},
-      {:retry, "~> 0.7"},
       {:ex_spec, "~> 2.0", only: :test},
       {:mock, "~> 0.2.0", only: :test},
       {:exvcr, "~> 0.8", only: :test}

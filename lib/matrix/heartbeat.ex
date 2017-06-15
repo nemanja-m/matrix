@@ -1,8 +1,7 @@
 defmodule Matrix.Heartbeat do
   use GenServer
-  use Retry
 
-  import Stream
+  import Matrix.Retry
 
   require Logger
 
@@ -26,20 +25,19 @@ defmodule Matrix.Heartbeat do
     |> Enum.each(fn node ->
       url = "#{node.address}/node"
 
-      wait lin_backoff(500, 1) |> take(1) do
+      retry delay: 500, count: 1 do
         case HTTPoison.get(url) do
           {:ok, %HTTPoison.Response{status_code: 200}} ->
             true
 
           _ ->
-            Logger.warn "Retrying ..."
+            Logger.warn "[HEARTBEAT] Retrying ..."
             false
         end
-      then
+      after
         Logger.warn "'#{node.aliaz}' is alive"
       else
         Logger.error "'#{node.aliaz}' is dead"
-
         ConnectionManager.remove_agent_center(node.aliaz)
       end
     end)
