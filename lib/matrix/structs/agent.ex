@@ -3,7 +3,7 @@ defmodule Matrix.Agent do
   Represents agent.
   """
 
-  @derrive [Poison.Encoder]
+  @derive [Poison.Encoder]
   defstruct [:id]
 
   @type t :: %__MODULE__{id: Matrix.AID.t}

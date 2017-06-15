@@ -64,7 +64,7 @@ defmodule Matrix.ConnectionManager do
   end
   defp register_agent_center(agent_center, master_node: true) do
     case handshake(agent_center) do
-      result = {:ok, _} ->
+      {:ok, _} ->
         add_agent_center(agent_center)
 
       result = {:error, _} ->
@@ -97,7 +97,7 @@ defmodule Matrix.ConnectionManager do
     ConnectionManager.remove_agent_center("Mars")
 
   """
-  @spec remove_agent_center(aliaz :: String.t)
+  @spec remove_agent_center(aliaz :: String.t) :: :ok
   def remove_agent_center(aliaz) do
     clear_agent_center_data(aliaz)
 

@@ -11,7 +11,7 @@ defmodule Matrix.NodeController do
     |> Enum.map(fn %{"aliaz" => aliaz, "address" => address} ->
       ConnectionManager.register_agent_center(%AgentCenter{aliaz: aliaz, address: address})
     end)
-    |> Enum.any?(fn {result, message} -> result == :error end)
+    |> Enum.any?(fn {result, _} -> result == :error end)
     |> case do
       false -> json(conn, "ok")
       true  ->
