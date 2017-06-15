@@ -1,10 +1,23 @@
 defmodule Matrix.ConnectionManager do
+  @moduledoc """
+  Handles all communication between agent centers in cluster.
+
+  This module is used for registration / unregistration of new agent centers.
+
+  Also it provides neccesary functions for handshake mechanism between new agent center
+  and master node.
+  """
+
   import Matrix.Retry
 
   require Logger
 
   alias Matrix.{Configuration, AgentCenter, Cluster, Agents, AgentManager}
 
+  @doc """
+  Registers non-master node to cluster.
+  """
+  @spec register_self :: {:ok | :error}
   def register_self do
     register_self(master_node: Configuration.is_master_node?)
   end
@@ -32,6 +45,20 @@ defmodule Matrix.ConnectionManager do
   end
   defp register_self(master_node: true), do: nil
 
+  @doc """
+  Registers given agent center in cluster.
+
+  If this node is master that rest of the cluster is updated with new agent center.
+
+  Successful handshake between new agent center and master one is required before
+  adding new node to cluster.
+
+  ## Example
+
+    ConnectionManager.register_agent_center(%AgentCenter{aliaz: "Mars", address: "MilkyWay"})
+
+  """
+  @spec register_agent_center(agent_center :: Matrix.AgentCenter.t) :: {{:ok, String.t} | {:error, String.t}}
   def register_agent_center(agent_center) do
     register_agent_center(agent_center, master_node: Configuration.is_master_node?)
   end
@@ -50,7 +77,7 @@ defmodule Matrix.ConnectionManager do
     add_agent_center(agent_center)
   end
 
-  def add_agent_center(agent_center) do
+  defp add_agent_center(agent_center) do
     case Cluster.register_node(agent_center) do
       :ok ->
         Logger.warn "Agent center '#{agent_center.aliaz}' registered successfully"
@@ -61,6 +88,16 @@ defmodule Matrix.ConnectionManager do
     end
   end
 
+  @doc """
+  Clears agent center related data from this node and
+  sends message to the other agent centers to do so.
+
+  ## Example
+
+    ConnectionManager.remove_agent_center("Mars")
+
+  """
+  @spec remove_agent_center(aliaz :: String.t)
   def remove_agent_center(aliaz) do
     clear_agent_center_data(aliaz)
 
@@ -72,15 +109,33 @@ defmodule Matrix.ConnectionManager do
     end)
   end
 
-  def clear_agent_center_data(aliaz) do
-    Cluster.unregister_node(aliaz)
-    Agents.delete_types_for(aliaz)
+  @doc """
+  Deletes all data related to given agent center:
 
-    Logger.warn "'#{aliaz}' removed from cluster"
+    * agent types
+    * running agents
+
+  Agent center is removed from cluster too.
+
+  ## Example
+
+    ConnectionManager.clear_agent_center_data("Mars")
+
+  """
+  @spec clear_agent_center_data(agent_center :: String.t) :: any
+  def clear_agent_center_data(agent_center) do
+    Cluster.unregister_node(agent_center)
+    Agents.delete_types_for(agent_center)
+
+    Logger.warn "'#{agent_center}' removed from cluster"
 
     # TODO Delete agent data
   end
 
+  @doc """
+  Returns list of all agent centers in cluster except this one.
+  """
+  @spec agent_centers :: list(Matrix.AgentCenter.t)
   def agent_centers do
     Cluster.nodes
     |> Enum.reject(fn %AgentCenter{aliaz: aliaz} ->

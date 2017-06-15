@@ -14,7 +14,10 @@ defmodule Matrix.NodeController do
     |> Enum.any?(fn {result, message} -> result == :error end)
     |> case do
       false -> json(conn, "ok")
-      true  -> json(conn, %{error: "Handshake failed"})
+      true  ->
+        conn
+        |> put_status(:bad_request)
+        |> json(%{error: "Handshake failed"})
     end
   end
 
