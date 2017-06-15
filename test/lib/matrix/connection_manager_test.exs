@@ -53,7 +53,10 @@ defmodule ConnectionManagerTest do
 
   describe ".register_agent_center" do
     it "registers given node to cluster" do
-      with_mock HTTPoison, [post!: fn (_, _, _) -> {:ok, :response} end] do
+      with_mock HTTPoison, [
+        post: fn (_, _, _) -> {:ok, %HTTPoison.Response{status_code: 200} } end,
+        get: fn(_) -> {:ok, %HTTPoison.Response{status_code: 200, body: Poison.encode!(%{data: []}) }} end
+      ] do
         ConnectionManager.register_agent_center(@neptune)
 
         assert @neptune in Cluster.nodes
@@ -62,30 +65,38 @@ defmodule ConnectionManagerTest do
 
     context "when node is master" do
       it "updates other agent centers in cluster with new center" do
-        with_mock HTTPoison, [post!: fn (_, _, _) -> {:ok, :response} end] do
-          Cluster.register_node(@venera)
+        with_mock HTTPoison, [
+          post: fn (_, _, _) -> {:ok, %HTTPoison.Response{status_code: 200} } end,
+          get: fn(_) -> {:ok, %HTTPoison.Response{status_code: 200, body: Poison.encode!(%{data: []}) }} end
+        ]
 
+        do
+          Cluster.register_node(@venera)
           ConnectionManager.register_agent_center(@neptune)
 
           url = "#{@venera.address}/node"
           body = Poison.encode! %{data: [Map.from_struct(@neptune)]}
-          headers = [{"Content-Type", "application/json"}]
+          headers = [ {"Content-Type", "application/json"} ]
 
-          assert called HTTPoison.post!(url, body, headers)
+          assert called HTTPoison.post(url, body, headers)
         end
       end
 
       it "updates new agent center with other agent centers" do
-        with_mock HTTPoison, [post!: fn (_, _, _) -> {:ok, :response} end] do
-          Cluster.register_node(@venera)
+        with_mock HTTPoison, [
+          post: fn (_, _, _) -> {:ok, %HTTPoison.Response{status_code: 200} } end,
+          get: fn(_) -> {:ok, %HTTPoison.Response{status_code: 200, body: Poison.encode!(%{data: []}) }} end
+        ]
 
+        do
+          Cluster.register_node(@venera)
           ConnectionManager.register_agent_center(@neptune)
 
           url = "#{@neptune.address}/node"
           body = Poison.encode! %{data: [Configuration.this, Map.from_struct(@venera)]}
           headers = [{"Content-Type", "application/json"}]
 
-          assert called HTTPoison.post!(url, body, headers)
+          assert called HTTPoison.post(url, body, headers)
         end
       end
     end

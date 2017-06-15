@@ -20,10 +20,14 @@ defmodule Matrix.NodeControllerTest do
 
       context "with successful handshake" do
         it "registers node", %{conn: conn} do
-          with_mock HTTPoison, [post!: fn (_, _, _) -> "ok" end] do
+          with_mock HTTPoison, [
+            post: fn (_, _, _) -> {:ok, %HTTPoison.Response{status_code: 200}} end,
+            get: fn (_) -> {:ok, %HTTPoison.Response{status_code: 200, body: Poison.encode!(%{"data" => []}) }} end
+          ] do
             conn = post conn, "/node", data: [@neptune |> Map.from_struct]
 
             assert response(conn, 200)
+            assert @neptune in Cluster.nodes
           end
         end
       end

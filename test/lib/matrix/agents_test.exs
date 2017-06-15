@@ -54,7 +54,7 @@ defmodule Matrix.AgentsTest do
       Agents.delete_types_for("Mars")
 
       assert Agents.types == [@pong]
-      refute Agents.types_for("Mars")
+      assert Agents.types_for("Mars") == []
     end
   end
 
