@@ -8,12 +8,14 @@ defmodule Matrix.NodeController do
 
   def register(conn, %{"data" => agent_centers}) do
     agent_centers
-    |> Enum.each(fn %{"aliaz" => aliaz, "address" => address} ->
+    |> Enum.map(fn %{"aliaz" => aliaz, "address" => address} ->
       ConnectionManager.register_agent_center(%AgentCenter{aliaz: aliaz, address: address})
     end)
-
-    conn
-    |> json("ok")
+    |> Enum.any?(fn {result, message} -> result == :error end)
+    |> case do
+      false -> json(conn, "ok")
+      true  -> json(conn, %{error: "Handshake failed"})
+    end
   end
 
   def heartbeat(conn, _params) do

@@ -22,11 +22,11 @@ defmodule Matrix.ConnectionManager do
 
       {:ok, response} ->
         body = Poison.decode! response.body
-        Logger.error "Node registeration failed: #{body["error"]}"
+        Logger.error "Node registration failed: #{body["error"]}"
         :error
 
       _ ->
-        Logger.error "Node registeration failed"
+        Logger.error "Node registration failed: Unknown error"
         :error
     end
   end
@@ -37,12 +37,13 @@ defmodule Matrix.ConnectionManager do
   end
   defp register_agent_center(agent_center, master_node: true) do
     case handshake(agent_center) do
-      {:ok, _} ->
+      result = {:ok, _} ->
         add_agent_center(agent_center)
 
-      {:error, _} ->
+      result = {:error, _} ->
         Logger.error "Agent center '#{agent_center.aliaz}' handshake failed"
         remove_agent_center(agent_center.aliaz)
+        result
     end
   end
   defp register_agent_center(agent_center, master_node: false) do
@@ -50,8 +51,14 @@ defmodule Matrix.ConnectionManager do
   end
 
   def add_agent_center(agent_center) do
-    Cluster.register_node(agent_center)
-    Logger.warn "Agent center '#{agent_center.aliaz}' registered successfully"
+    case Cluster.register_node(agent_center) do
+      :ok ->
+        Logger.warn "Agent center '#{agent_center.aliaz}' registered successfully"
+        {:ok, ""}
+
+      :exists ->
+        {:error, "Node already exists"}
+    end
   end
 
   def remove_agent_center(aliaz) do
