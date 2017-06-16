@@ -10,8 +10,7 @@ defmodule Matrix.Agent do
 
   @type t :: %__MODULE__{id: AID.t}
 
-  @callback handle_message(message :: AclMessage.t, state :: any)
-    :: {:ok, any, any} | {:error, any, any}
+  @callback handle_message(message :: AclMessage.t, state :: any) :: {:ok, any, any} | {:error, any, any}
 
   defmacro __using__(options) do
     quote do

@@ -4,7 +4,13 @@ defmodule Matrix do
   def start(_type, _args) do
     import Supervisor.Spec
 
+    # Import defined agents into VM
     agent_types = Matrix.AgentManager.import_agent_types
+
+    # Generate supervisors for imported agents
+    agent_supervisors =
+      Matrix.AgentManager.generate_agent_supervisor_modules(agent_types)
+      |> Enum.map(fn module -> supervisor(module, []) end)
 
     # Define workers and child supervisors to be supervised
     children = [
@@ -15,7 +21,7 @@ defmodule Matrix do
     ]
 
     opts = [strategy: :one_for_one, name: Matrix.Supervisor]
-    pid = Supervisor.start_link(children, opts)
+    pid = Supervisor.start_link(children ++ agent_supervisors, opts)
 
     # Register this node to network
     Matrix.ConnectionManager.register_self

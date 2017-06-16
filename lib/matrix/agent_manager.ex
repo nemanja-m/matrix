@@ -8,6 +8,8 @@ defmodule Matrix.AgentManager do
 
   alias Matrix.{Configuration, Agents, AgentType, Agent}
 
+  @agent_supervisor_template "templates/agent_supervisor_template.eex"
+
   @doc """
   Returns list of AgentTypes avaialble on this agent center.
   """
@@ -96,6 +98,27 @@ defmodule Matrix.AgentManager do
         name: name,
         module: type_module
       }
+  end
+
+  @doc """
+  For every loaded agent type creates supervisor module dynamically and
+  loads it into VM.
+
+  ## Example
+
+    AgentManager.generate_agent_supervisor_modules(%AgentType{name: "Ping", module: ""})
+    # => Matrix.PingSupervisor
+
+  """
+  @spec generate_agent_supervisor_modules(agent_types :: list(AgentType.t)) :: list(module)
+  def generate_agent_supervisor_modules(agent_types) do
+    agent_types
+    |> Enum.map(fn %AgentType{name: name} ->
+      EEx.eval_file(@agent_supervisor_template, assigns: [agent: name])
+      |> Code.compile_string
+      |> Enum.map(fn {supervisor_module, _} -> supervisor_module end)
+    end)
+    |> List.flatten
   end
 
   defp agents_dir do
