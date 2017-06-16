@@ -19,7 +19,7 @@ defmodule Matrix.AgentControllerTest do
 
       conn = get conn, "/agents/classes"
 
-      assert json_response(conn, 200)["data"] == [@ping_map, @pong_map]
+      assert json_response(conn, 200)["data"] == %{Configuration.this_aliaz => [@ping_map, @pong_map]}
     end
   end
 

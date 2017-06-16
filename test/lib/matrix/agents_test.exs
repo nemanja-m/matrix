@@ -35,12 +35,10 @@ defmodule Matrix.AgentsTest do
   describe ".add_types" do
     it "adds new types for given agent center" do
       Agents.add_types("Mars", [@ping])
-
-      assert Agents.types == [@ping]
+      assert Agents.types_for("Mars") == [@ping]
 
       Agents.add_types("Neptune", [@pong])
-
-      assert Agents.types == [@ping, @pong]
+      assert Agents.types_for("Neptune") == [@pong]
     end
   end
 
@@ -49,21 +47,27 @@ defmodule Matrix.AgentsTest do
       Agents.add_types("Mars", [@ping])
       Agents.add_types("Neptune", [@pong])
 
-      assert Agents.types == [@ping, @pong]
+      assert Agents.types == %{
+        "Mars" => [@ping],
+        "Neptune" => [@pong]
+      }
 
       Agents.delete_types_for("Mars")
 
-      assert Agents.types == [@pong]
+      assert Agents.types == %{ "Neptune" => [@pong] }
       assert Agents.types_for("Mars") == []
     end
   end
 
   describe ".types" do
-    it "returns list of all agent types in cluster" do
+    it "returns map of all agent types in cluster for each agent center" do
       Agents.add_types("Mars", [@ping])
       Agents.add_types("Neptune", [@pong])
 
-      assert Agents.types == [@ping, @pong]
+      assert Agents.types == %{
+        "Mars" => [@ping],
+        "Neptune" => [@pong]
+      }
     end
   end
 
@@ -122,11 +126,14 @@ defmodule Matrix.AgentsTest do
       Agents.add_types("Mars", [@ping])
       Agents.add_types("Neptune", [@pong])
 
-      assert Agents.types == [@ping, @pong]
+      assert Agents.types == %{
+        "Mars" => [@ping],
+        "Neptune" => [@pong]
+      }
 
       Agents.reset
 
-      assert Agents.types == []
+      assert Agents.types == %{}
     end
   end
 end

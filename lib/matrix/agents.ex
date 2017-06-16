@@ -74,15 +74,15 @@ defmodule Matrix.Agents do
   end
 
   @doc """
-  Returns list of all supported agent types in cluster.
+  Returns all supported agent types in cluster for each agent center.
 
   ## Example
 
     Agents.types
-    # => [`%AgentType{name: "Ping", module: "Agents"}]
+    # => `%{"Mars" => [%AgentType{name: "Ping", module: "Agents"}]}`
 
   """
-  @spec types :: list(Matrix.AgentType.t)
+  @spec types :: %{required(String.t) => list(Matrix.AgentType.t)}
   def types do
     GenServer.call(__MODULE__, {:types})
   end
@@ -170,14 +170,9 @@ defmodule Matrix.Agents do
   # Server callbacks
 
   def handle_call({:types}, _from, state) do
-    types =
-      state.agent_types
-      |> Enum.reduce([], fn {_, types}, acc ->
-        acc ++ types
-      end)
-
-    {:reply, types, state}
+    {:reply, state.agent_types, state}
   end
+
   def handle_call({:types, aliaz}, _from, state) do
     {:reply, state.agent_types[aliaz] || [], state}
   end

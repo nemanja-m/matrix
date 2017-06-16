@@ -1,13 +1,13 @@
 defmodule Matrix.AgentController do
   use Matrix.Web, :controller
 
-  alias Matrix.AgentManager
+  alias Matrix.{AgentManager, Configuration}
 
   plug :set_headers
 
   def get_classes(conn, _params) do
     conn
-    |> json(%{data: AgentManager.self_agent_types})
+    |> json(%{data: %{Configuration.this_aliaz => AgentManager.self_agent_types}})
   end
 
   def set_classes(conn, %{"data" => data}) do
