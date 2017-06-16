@@ -4,11 +4,13 @@ defmodule Matrix do
   def start(_type, _args) do
     import Supervisor.Spec
 
+    agent_types = Matrix.AgentManager.import_agent_types
+
     # Define workers and child supervisors to be supervised
     children = [
       supervisor(Matrix.Endpoint, []),
       worker(Matrix.Cluster, []),
-      worker(Matrix.Agents, []),
+      worker(Matrix.Agents, [agent_types]),
       worker(Matrix.Heartbeat, [])
     ]
 

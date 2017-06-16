@@ -27,7 +27,7 @@ defmodule Matrix.Agent do
 
       def init(name) do
         state =
-          Matrix.Agent.new(name, type())
+          Matrix.Agent.new(name, Matrix.AgentManager.module_to_type(__MODULE__))
           |> Map.merge(unquote(options[:state]))
 
         {:ok, state}
@@ -44,23 +44,6 @@ defmodule Matrix.Agent do
         {:reply, state, state}
       end
 
-      defp type do
-        name =
-          __MODULE__
-          |> Module.split
-          |> List.last
-
-        module =
-          __MODULE__
-          |> Module.split
-          |> List.delete(name)
-          |> Enum.join(".")
-
-        %Matrix.AgentType{
-          name: name,
-          module: module
-        }
-      end
     end
   end
 

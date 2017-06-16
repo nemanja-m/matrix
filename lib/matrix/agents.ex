@@ -34,8 +34,8 @@ defmodule Matrix.Agents do
     @type t :: %__MODULE__{agent_types: Map.t, running_agents: Map.t}
   end
 
-  def start_link(_options \\ []) do
-    GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
+  def start_link(args \\ []) do
+    GenServer.start_link(__MODULE__, args, name: __MODULE__)
   end
 
   # Client API
@@ -224,8 +224,8 @@ defmodule Matrix.Agents do
     {:noreply, %State{}}
   end
 
-  def init(_) do
-    {:ok, %State{}}
+  def init(agent_types) do
+    {:ok, %State{agent_types: %{Matrix.Configuration.this_aliaz => agent_types}}}
   end
 
 end
