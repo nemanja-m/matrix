@@ -1,9 +1,10 @@
 defmodule Matrix.AgentController do
   use Matrix.Web, :controller
 
-  alias Matrix.{Agent, AgentType, AgentManager, Agents}
+  alias Matrix.{Agent, AID, AgentCenter, AgentType, AgentManager, Agents, Cluster}
 
   plug :set_headers
+  plug :create_agent when action in [:stop_agent]
 
   def get_classes(conn, _params) do
     conn
@@ -38,16 +39,35 @@ defmodule Matrix.AgentController do
     |> json("ok")
   end
 
-  def stop_agent(conn, %{"data" => %{"id" => agent_hash, "update" => true}}) do
-    AgentManager.delete_running_agent(Agent.from_hash(agent_hash))
+  def stop_agent(conn, _params) do
+    if conn.assigns[:update] do
+      AgentManager.delete_running_agent(conn.assigns[:agent])
+    else
+      AgentManager.stop_agent(conn.assigns[:agent])
+    end
 
     conn
     |> json("ok")
   end
-  def stop_agent(conn, %{"data" => agent_hash}) do
-    AgentManager.stop_agent(Agent.from_hash(agent_hash))
+
+  defp create_agent(conn, _) do
+    %{
+      "name" => name,
+      "alias" => aliaz,
+      "module" => module,
+      "type_name" => type_name
+    } = conn.params
+
+    agent = %Agent{
+      id: %AID{
+        name: name,
+        type: %AgentType{name: type_name, module: module},
+        host: %AgentCenter{aliaz: aliaz, address: Cluster.address_for(aliaz)}
+      }
+    }
 
     conn
-    |> json("ok")
+    |> assign(:agent, agent)
+    |> assign(:update, conn.params["update"] == "true")
   end
 end

@@ -64,4 +64,21 @@ defmodule Matrix.ClusterTest do
       assert Cluster.nodes == []
     end
   end
+
+  describe ".address_for" do
+    context "when agent center exists in cluster" do
+      it "returns address for given agent center" do
+        assert Cluster.address_for(Configuration.this_aliaz) == Configuration.this_address
+
+        Cluster.register_node(@neptune)
+        assert Cluster.address_for(@neptune.aliaz) == @neptune.address
+      end
+    end
+
+    context "when agent cener doesn't exists in cluster" do
+      it "returns nil" do
+        refute Cluster.address_for("Neptune")
+      end
+    end
+  end
 end

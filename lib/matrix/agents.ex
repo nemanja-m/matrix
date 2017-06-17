@@ -14,6 +14,8 @@ defmodule Matrix.Agents do
 
   use GenServer
 
+  alias Matrix.{Configuration, Cluster, AgentCenter, AgentType}
+
   defmodule State do
     @moduledoc """
     Represents state of agents in cluster.
@@ -101,6 +103,11 @@ defmodule Matrix.Agents do
   @spec types_for(agent_center :: String.t) :: list(Matrix.AgentType.t)
   def types_for(agent_center) do
     GenServer.call(__MODULE__, {:types, agent_center})
+  end
+
+  @spec find_agent_center_with_type(type :: AgentType.t) :: AgentCenter.t | nil
+  def find_agent_center_with_type(type) do
+    GenServer.call(__MODULE__, {:find_agent_center_with_type, type})
   end
 
   @doc """
@@ -207,6 +214,24 @@ defmodule Matrix.Agents do
 
   def handle_call({:running_per_agent_center}, _from, state) do
     {:reply, state.running_agents, state}
+  end
+
+  def handle_call({:find_agent_center_with_type, type}, _from, state) do
+    pair =
+      state.agent_types
+      |> Enum.find(fn {aliaz, agent_types} ->
+        (Configuration.this_aliaz != aliaz) && (type in agent_types)
+      end)
+
+    case pair do
+      {aliaz, _} ->
+        {:reply, %AgentCenter{aliaz: aliaz, address: Cluster.address_for(aliaz)}, state}
+
+      nil ->
+        {:reply, nil, state}
+
+      _ -> raise "Invalid state struct"
+    end
   end
 
   def handle_cast({:add_types, aliaz, types}, state) do

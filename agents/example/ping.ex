@@ -1,4 +1,4 @@
-defmodule Ping do
+defmodule Example.Ping do
   use Matrix.Agent,
     state: %{}
 

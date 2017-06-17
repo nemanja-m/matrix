@@ -49,6 +49,11 @@ defmodule Matrix.Cluster do
     GenServer.call(__MODULE__, {:nodes})
   end
 
+  @spec address_for(aliaz :: String.t) :: String.t | nil
+  def address_for(aliaz) do
+    GenServer.call(__MODULE__, {:address_for, aliaz})
+  end
+
   @doc """
   Adds new agent center to cluster.
 
@@ -121,6 +126,10 @@ defmodule Matrix.Cluster do
 
   def handle_call({:nodes}, _from, state) do
     {:reply, nodes_list(state), state}
+  end
+
+  def handle_call({:address_for, aliaz}, _from, state) do
+    {:reply, state.nodes[aliaz], state}
   end
 
   def handle_call({:register_node, %AgentCenter{aliaz: aliaz, address: address}}, _from, state) do

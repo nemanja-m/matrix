@@ -11,6 +11,7 @@ defmodule Matrix.AgentManagerTest do
   end
 
   @neptune %AgentCenter{aliaz: "Neptune", address: "localhost:5000"}
+  @venera %AgentCenter{aliaz: "Venera", address: "localhost:6000"}
 
   @ping %AgentType{name: "Ping", module: "Test"}
   @pong %AgentType{name: "Pong", module: "Test"}
@@ -30,6 +31,10 @@ defmodule Matrix.AgentManagerTest do
       type: @pong
     }
   }
+
+  defp stop_agent(name) do
+    name |> String.capitalize |> String.to_atom |> GenServer.stop(:shutdown)
+  end
 
   describe ".self_agent_types" do
     it "returns agent types on this agent center" do
@@ -80,8 +85,59 @@ defmodule Matrix.AgentManagerTest do
     end
   end
 
+  describe ".start_agent" do
+    context "current host supports agent type" do
+      it "adds running agent to agent center" do
+        Agents.add_types(Configuration.this_aliaz, [@ping])
+        AgentManager.start_agent(@ping, @ping_agent.id.name)
+
+        assert Agents.running_on(Configuration.this_aliaz) == [@ping_agent]
+        assert Supervisor.which_children(Matrix.PingSupervisor) |> Enum.count == 1
+
+        stop_agent(@ping_agent.id.name)
+      end
+
+      it "sends post request to other agent centers" do
+        with_mock HTTPoison, [post: fn (_, _, _) -> :ok end] do
+          Cluster.register_node(@neptune)
+          Agents.add_types(Configuration.this_aliaz, [@ping])
+          AgentManager.start_agent(@ping, @ping_agent.id.name)
+
+          url = "#{@neptune.address}/agents/running"
+          body = Poison.encode!(%{data: %{Configuration.this_aliaz => [@ping_agent]}})
+          headers = [{"Content-Type", "application/json"}]
+
+          assert called HTTPoison.post(url, body, headers)
+
+          stop_agent(@ping_agent.id.name)
+        end
+      end
+    end
+
+    context "current host doesn't support agent type" do
+      it "sends put request to first agent center that supports given type" do
+        with_mock HTTPoison, [put: fn (_, _, _) -> :ok end] do
+          Cluster.register_node(@neptune)
+          Cluster.register_node(@venera)
+
+          Agents.add_types(@neptune.aliaz, [@pong])
+          Agents.add_types(@venera.aliaz, [@pong])
+
+          AgentManager.start_agent(@pong, @pong_agent.id.name)
+
+          url = "#{@neptune.address}/agents/running"
+          body = Poison.encode!(%{data: %{type: @pong, name: @pong_agent.id.name}})
+          headers = [{"Content-Type", "application/json"}]
+
+          assert called HTTPoison.put(url, body, headers)
+        end
+      end
+    end
+  end
+
   describe ".stop_agent" do
     it "deletes running agent from agent center" do
+      Agents.add_types(Configuration.this_aliaz, [@ping])
       AgentManager.start_agent(@ping, @ping_agent.id.name)
       assert Agents.running_on(Configuration.this_aliaz) == [@ping_agent]
 
@@ -91,6 +147,7 @@ defmodule Matrix.AgentManagerTest do
 
     context "agent's host is current node" do
       it "stops agent's gen_server" do
+        Agents.add_types(Configuration.this_aliaz, [@ping])
         AgentManager.start_agent(@ping, @ping_agent.id.name)
         assert Agents.running_on(Configuration.this_aliaz) == [@ping_agent]
 
@@ -98,32 +155,41 @@ defmodule Matrix.AgentManagerTest do
         assert Supervisor.which_children(Matrix.PingSupervisor) == []
       end
 
-      it "send delete request to other aggent centers" do
-        Cluster.register_node(@neptune)
+      it "send delete request to other agent centers" do
+        with_mock HTTPoison, [
+          delete: fn (_, _) -> :ok end,
+          post: fn (_, _, _) -> :ok end
+        ]
 
-        with_mock HTTPoison, [delete: fn (_, _, _) -> "ok" end] do
+        do
+          Cluster.register_node(@neptune)
+          Agents.add_types(Configuration.this_aliaz, [@ping])
           AgentManager.start_agent(@ping, @ping_agent.id.name)
           AgentManager.stop_agent(@ping_agent)
 
-          url = "#{@neptune.address}/agents/running"
-          body = Poison.encode!(%{data: @ping_agent |> Map.merge(%{update: true})})
+          host = "#{@ping_agent.id.host.aliaz}"
+          type = "#{@ping_agent.id.type.name}/#{@ping_agent.id.type.module}"
+          url  = "#{@neptune.address}/agents/running/id/#{@ping_agent.id.name}/host/#{host}/type/#{type}?update=true"
+
           headers = [{"Content-Type", "application/json"}]
 
-          assert called HTTPoison.delete(url, body, headers)
+          assert called HTTPoison.delete(url, headers)
         end
       end
     end
 
     context "when agent's host isn't current node" do
       it "sends delete request to agent's host node" do
-        with_mock HTTPoison, [delete: fn (_, _, _) -> "ok" end] do
+        with_mock HTTPoison, [delete: fn (_, _) -> "ok" end] do
           AgentManager.stop_agent(@pong_agent)
 
-          url = "#{@neptune.address}/agents/running"
-          body = Poison.encode!(%{data: @pong_agent})
+          host = "#{@pong_agent.id.host.aliaz}"
+          type = "#{@pong_agent.id.type.name}/#{@pong_agent.id.type.module}"
+          url  = "#{@pong_agent.id.host.address}/agents/running/id/#{@pong_agent.id.name}/host/#{host}/type/#{type}"
+
           headers = [{"Content-Type", "application/json"}]
 
-          assert called HTTPoison.delete(url, body, headers)
+          assert called HTTPoison.delete(url, headers)
         end
       end
     end

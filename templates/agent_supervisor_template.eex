@@ -7,7 +7,7 @@ defmodule Matrix.<%= "#{@agent}Supervisor" %> do
 
   def init(_options) do
     children = [
-      worker(<%= @agent %>, [], restart: :transient)
+      worker(<%= @agent_module %>, [], restart: :transient)
     ]
 
     supervise(children, strategy: :simple_one_for_one)

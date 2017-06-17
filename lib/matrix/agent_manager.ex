@@ -61,11 +61,37 @@ defmodule Matrix.AgentManager do
 
   @spec start_agent(type :: AgentType.t, name :: String.t) :: :ok
   def start_agent(type, name) do
-    apply(String.to_existing_atom("Elixir.Matrix.#{type.name}Supervisor"), :start_child, [name])
+    start_agent(type, name, host_node: type in Agents.types_for(Configuration.this_aliaz))
+  end
+  defp start_agent(type, name, host_node: true) do
+    {:ok, _} = apply(String.to_atom("Elixir.Matrix.#{type.name}Supervisor"), :start_child, [name])
 
-    # TODO Update cluster with new running agent
+    agent = Agent.new(name, type)
 
-    Agents.add_running(Configuration.this_aliaz, [Agent.new(name, type)])
+    Agents.add_running(Configuration.this_aliaz, [agent])
+    Logger.warn "Agent '#{name}' started"
+
+    ConnectionManager.agent_centers
+    |> Enum.each(fn %AgentCenter{address: address} ->
+      url = "#{address}/agents/running"
+      body = Poison.encode!(%{data: %{Configuration.this_aliaz => [agent]}})
+      headers = [{"Content-Type", "application/json"}]
+
+      HTTPoison.post(url, body, headers)
+    end)
+  end
+  defp start_agent(type, name, host_node: false) do
+    case Agents.find_agent_center_with_type(type) do
+      nil ->
+        Logger.error "Unsupported agent type"
+
+      agent_center ->
+        url = "#{agent_center.address}/agents/running"
+        body = Poison.encode!(%{data: %{type: type, name: name}})
+        headers = [{"Content-Type", "application/json"}]
+
+        HTTPoison.put(url, body, headers)
+    end
   end
 
   @doc """
@@ -86,25 +112,36 @@ defmodule Matrix.AgentManager do
     stop_agent(agent, host_node: agent.id.host == Configuration.this)
   end
   defp stop_agent(agent, host_node: true) do
-    GenServer.stop(agent.id.name |> String.to_existing_atom, :shutdown)
+    agent.id.name
+    |> String.capitalize
+    |> String.to_atom
+    |> GenServer.stop(:shutdown)
+
     delete_running_agent(agent)
 
     ConnectionManager.agent_centers
     |> Enum.each(fn %AgentCenter{address: address} ->
-      body = Poison.encode!(%{data: agent |> Map.merge(%{update: true})})
-
-      send_delete_agent(address, body)
+      "#{delete_url(agent, address)}?update=true" |> send_delete_agent
     end)
   end
   defp stop_agent(agent, host_node: false) do
-    send_delete_agent(agent.id.host.address, Poison.encode!(%{data: agent}))
+    delete_url(agent) |> send_delete_agent
   end
 
-  defp send_delete_agent(address, body) do
-    url = "#{address}/agents/running"
+  defp delete_url(agent) do
+    delete_url(agent, agent.id.host.address)
+  end
+  defp delete_url(agent, address) do
+    host = "#{agent.id.host.aliaz}"
+    type = "#{agent.id.type.name}/#{agent.id.type.module}"
+
+    "#{address}/agents/running/id/#{agent.id.name}/host/#{host}/type/#{type}"
+  end
+
+  defp send_delete_agent(url) do
     headers = [{"Content-Type", "application/json"}]
 
-    HTTPoison.delete(url, body, headers)
+    HTTPoison.delete(url, headers)
   end
 
   @doc """
@@ -172,8 +209,8 @@ defmodule Matrix.AgentManager do
   @spec generate_agent_supervisor_modules(agent_types :: list(AgentType.t)) :: list(module)
   def generate_agent_supervisor_modules(agent_types) do
     agent_types
-    |> Enum.map(fn %AgentType{name: name} ->
-      EEx.eval_file(@agent_supervisor_template, assigns: [agent: name])
+    |> Enum.map(fn %AgentType{name: name, module: module} ->
+      EEx.eval_file(@agent_supervisor_template, assigns: [agent: name, agent_module: "#{module}.#{name}"])
       |> Code.compile_string
       |> Enum.map(fn {supervisor_module, _} -> supervisor_module end)
     end)
