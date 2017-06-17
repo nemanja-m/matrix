@@ -48,6 +48,13 @@ defmodule Matrix.AgentManager do
     end)
   end
 
+  @spec start_agent(type :: AgentType.t, name :: String.t) :: :ok
+  def start_agent(type, name) do
+    apply(String.to_existing_atom("Elixir.Matrix.#{type.name}Supervisor"), :start_child, [name])
+
+    # TODO Update cluster with new running agent
+  end
+
   @doc """
   Compiles and imports all agent types located in specified agents directory.
   Returns list of available agent types on this node.

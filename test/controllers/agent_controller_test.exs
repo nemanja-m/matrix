@@ -72,4 +72,16 @@ defmodule Matrix.AgentControllerTest do
       assert [ping, pong] == [@ping_agent, @pong_agent]
     end
   end
+
+  describe "PUT /agents/running" do
+    it "starts new agent with given name", %{conn: conn} do
+      Agents.add_types(Configuration.this_aliaz, [@ping])
+
+      conn = put conn, "/agents/running", %{data: %{type: @ping_map, name: "Pinger"}}
+
+      assert json_response(conn, 200)
+      assert GenServer.call(:Pinger, :state).id.type.name == "Ping"
+      assert GenServer.call(:Pinger, :state).id.name == "Pinger"
+    end
+  end
 end

@@ -178,7 +178,13 @@ defmodule Matrix.Agents do
   end
 
   def handle_call({:running}, _from, state) do
-    {:reply, state.running_agents, state}
+    running_agents =
+      state.running_agents
+      |> Enum.reduce([], fn {_, agents}, acc ->
+        acc ++ agents
+      end)
+
+    {:reply, running_agents, state}
   end
 
   def handle_call({:running, agent_center}, _from, state) do

@@ -19,9 +19,9 @@ defmodule Matrix.Agent do
       @behaviour Matrix.Agent
 
       def start_link(args, _options \\ []) do
-        name = elem(args, 1) |> String.capitalize |> String.to_atom
+        name = elem(args, 1) |> String.capitalize
 
-        GenServer.start_link(__MODULE__, name, name: name)
+        GenServer.start_link(__MODULE__, name, name: name |> String.to_atom)
       end
 
       def init(name) do

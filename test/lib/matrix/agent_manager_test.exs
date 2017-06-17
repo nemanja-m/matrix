@@ -1,8 +1,6 @@
 defmodule Matrix.AgentManagerTest do
   use ExSpec
 
-  import Mock
-
   alias Matrix.{Configuration, Agent, AID, AgentCenter, Agents, AgentType, AgentManager}
 
   setup do
