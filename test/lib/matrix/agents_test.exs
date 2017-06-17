@@ -122,6 +122,16 @@ defmodule Matrix.AgentsTest do
     end
   end
 
+  describe ".delete_running" do
+    it "deletes running agent from agent center" do
+      Agents.add_running("Mars", [@ping_agent])
+      assert Agents.running_on("Mars") == [@ping_agent]
+
+      Agents.delete_running(@ping_agent)
+      assert Agents.running_on("Mars") == []
+    end
+  end
+
   describe ".reset" do
     it "resets all data" do
       Agents.add_types("Mars", [@ping])

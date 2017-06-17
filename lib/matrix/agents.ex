@@ -160,6 +160,20 @@ defmodule Matrix.Agents do
   end
 
   @doc """
+  Deletes running agent from agent center.
+
+  ## Example
+
+    ping = Agent.new(...)
+    Agents.delete_running(ping)
+
+  """
+  @spec delete_running(agent :: Agent.t) :: any
+  def delete_running(agent) do
+    GenServer.cast(__MODULE__, {:delete_running, agent})
+  end
+
+  @doc """
   Resets data about agent types and running agents.
   """
   @spec reset :: :ok
@@ -213,6 +227,12 @@ defmodule Matrix.Agents do
     types = state.agent_types |> Map.delete(aliaz)
 
     {:noreply, %State{agent_types: types, running_agents: state.running_agents}}
+  end
+
+  def handle_cast({:delete_running, agent}, state) do
+    new_running_agents = state.running_agents[agent.id.host.aliaz] |> List.delete(agent)
+
+    {:noreply, put_in(state.running_agents[agent.id.host.aliaz], new_running_agents)}
   end
 
   def handle_cast({:reset}, _state) do

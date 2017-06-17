@@ -6,7 +6,9 @@ defmodule Matrix.AgentManager do
   loads and imports available agent types etc.
   """
 
-  alias Matrix.{Configuration, Agents, AgentType, Agent}
+  alias Matrix.{ConnectionManager, Configuration, Agents, AgentType, Agent, AgentCenter}
+
+  require Logger
 
   @agent_supervisor_template "templates/agent_supervisor_template.eex"
 
@@ -48,11 +50,61 @@ defmodule Matrix.AgentManager do
     end)
   end
 
+  @doc """
+  Deletes given agent from running agents map.
+  """
+  @spec delete_running_agent(agent :: Agent.t) :: any
+  def delete_running_agent(agent) do
+    Agents.delete_running(agent)
+    Logger.warn "Agent '#{agent.id.name}' stopped"
+  end
+
   @spec start_agent(type :: AgentType.t, name :: String.t) :: :ok
   def start_agent(type, name) do
     apply(String.to_existing_atom("Elixir.Matrix.#{type.name}Supervisor"), :start_child, [name])
 
     # TODO Update cluster with new running agent
+
+    Agents.add_running(Configuration.this_aliaz, [Agent.new(name, type)])
+  end
+
+  @doc """
+  Stops given running agent and deletes it from cluster.
+
+  If agent's host is current node then agent gen_server is stopped and other
+  nodes are notified about agent's shutdown.
+
+  If agent's host isn't current node, then delete request is sent to agent's host.
+
+  ## Example
+
+    AgentManager.stop_agent(%Agent{id: %AID{...})
+
+  """
+  @spec stop_agent(agent :: Agent.t) :: any
+  def stop_agent(agent) do
+    stop_agent(agent, host_node: agent.id.host == Configuration.this)
+  end
+  defp stop_agent(agent, host_node: true) do
+    GenServer.stop(agent.id.name |> String.to_existing_atom, :shutdown)
+    delete_running_agent(agent)
+
+    ConnectionManager.agent_centers
+    |> Enum.each(fn %AgentCenter{address: address} ->
+      body = Poison.encode!(%{data: agent |> Map.merge(%{update: true})})
+
+      send_delete_agent(address, body)
+    end)
+  end
+  defp stop_agent(agent, host_node: false) do
+    send_delete_agent(agent.id.host.address, Poison.encode!(%{data: agent}))
+  end
+
+  defp send_delete_agent(address, body) do
+    url = "#{address}/agents/running"
+    headers = [{"Content-Type", "application/json"}]
+
+    HTTPoison.delete(url, body, headers)
   end
 
   @doc """

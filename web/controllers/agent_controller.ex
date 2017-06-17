@@ -1,7 +1,7 @@
 defmodule Matrix.AgentController do
   use Matrix.Web, :controller
 
-  alias Matrix.{AgentType, AgentManager, Agents}
+  alias Matrix.{Agent, AgentType, AgentManager, Agents}
 
   plug :set_headers
 
@@ -33,6 +33,19 @@ defmodule Matrix.AgentController do
     agent_type = %AgentType{name: type["name"], module: type["module"]}
 
     AgentManager.start_agent(agent_type, name)
+
+    conn
+    |> json("ok")
+  end
+
+  def stop_agent(conn, %{"data" => %{"id" => agent_hash, "update" => true}}) do
+    AgentManager.delete_running_agent(Agent.from_hash(agent_hash))
+
+    conn
+    |> json("ok")
+  end
+  def stop_agent(conn, %{"data" => agent_hash}) do
+    AgentManager.stop_agent(Agent.from_hash(agent_hash))
 
     conn
     |> json("ok")
