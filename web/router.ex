@@ -14,6 +14,7 @@ defmodule Matrix.Router do
 
     get  "/agents/classes", AgentController, :get_classes
     post "/agents/classes", AgentController, :set_classes
+    get  "/agents/running", AgentController, :get_running
     post "/agents/running", AgentController, :set_running
   end
 end

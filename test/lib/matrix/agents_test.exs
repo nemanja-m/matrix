@@ -112,6 +112,7 @@ defmodule Matrix.AgentsTest do
       assert running_agents["Neptune"] == [@pong_agent]
     end
   end
+
   describe ".add_running" do
     it "adds new running agent for given agent center" do
       assert Agents.running_on("Mars") == []

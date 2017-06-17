@@ -104,15 +104,15 @@ defmodule Matrix.Agents do
   end
 
   @doc """
-  Returns all running agents on cluster.
+  Returns all running agents on cluster for every agent center.
 
   ## Example
 
     Agents.running
-    # => `[%Agent{id: %AID{}]`
+    # => `%{"Mars" => [%Agent{id: %AID{}]}`
 
   """
-  @spec running :: list[Matrix.Agent.t]
+  @spec running :: %{required(String.t) => list(Matrix.Agent.t)}
   def running do
     GenServer.call(__MODULE__, {:running})
   end
@@ -178,13 +178,7 @@ defmodule Matrix.Agents do
   end
 
   def handle_call({:running}, _from, state) do
-    running_agents =
-      state.running_agents
-      |> Enum.reduce([], fn {_, agents}, acc ->
-        acc ++ agents
-      end)
-
-    {:reply, running_agents, state}
+    {:reply, state.running_agents, state}
   end
 
   def handle_call({:running, agent_center}, _from, state) do
