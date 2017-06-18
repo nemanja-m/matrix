@@ -20,5 +20,7 @@ defmodule Matrix.Router do
     put    "/agents/running", AgentController, :start_agent
 
     delete "/agents/running/id/:name/host/:alias/type/:type_name/:module", AgentController, :stop_agent
+
+    get "/messages", MessageController, :performatives
   end
 end

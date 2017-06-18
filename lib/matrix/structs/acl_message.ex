@@ -40,4 +40,31 @@ defmodule Matrix.AclMessage do
     reply_by:        integer
   }
 
+  def performatives do
+    [
+      :accept_proposal,
+      :agree,
+      :cancel,
+      :cfp,
+      :confirm,
+      :disconfirm,
+      :failure,
+      :inform,
+      :inform_if,
+      :inform_ref,
+      :not_understood,
+      :propagate,
+      :propose,
+      :proxy,
+      :query_if,
+      :query_ref,
+      :refuse,
+      :reject_proposal,
+      :request,
+      :request_when,
+      :request_whenever,
+      :subscribe
+    ]
+  end
+
 end
