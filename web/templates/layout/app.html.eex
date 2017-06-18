@@ -10,6 +10,7 @@
     <title>Matrix |> Intelligent-Agent Development Framework</title>
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+    <link id="favicon" rel="icon" type="image/png" sizes="64x64" href="<%= static_path(@conn, "/images/favicon.png") %>"/>
   </head>
 
   <body style="font-family: 'Lato', sans-serif;">
