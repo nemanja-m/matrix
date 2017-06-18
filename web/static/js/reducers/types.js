@@ -4,8 +4,8 @@ const reduce = (state = initialState, action) => {
 
   switch (action.type) {
 
-    case 'ADD_TYPE':
-      return [...state, action.type];
+    case 'ADD_TYPES':
+      return [...state, ...action.types];
 
     default:
       return state;
