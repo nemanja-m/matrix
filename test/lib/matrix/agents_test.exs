@@ -168,4 +168,20 @@ defmodule Matrix.AgentsTest do
       end
     end
   end
+
+  describe ".exists?" do
+    context "there is agent with given name in cluster" do
+      it "returns true" do
+        Agents.add_running(@neptune.aliaz, [@ping_agent])
+
+        assert Agents.exists?(@ping_agent.id.name)
+      end
+    end
+
+    context "there are no agents with given name in cluster" do
+      it "returns false" do
+        refute Agents.exists?(@ping_agent.id.name)
+      end
+    end
+  end
 end

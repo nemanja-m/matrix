@@ -83,5 +83,15 @@ defmodule Matrix.AgentControllerTest do
       assert GenServer.call(:Pinger, :state).id.type.name == "Ping"
       assert GenServer.call(:Pinger, :state).id.name == "Pinger"
     end
+
+    context "trying to start agent with taken name" do
+      it "returns 400", %{conn: conn} do
+        Agents.add_running(Configuration.this_aliaz, [@ping_agent])
+
+        conn = put conn, "/agents/running", %{data: %{type: @ping_map, name: "Ping"}}
+
+        assert json_response(conn, 400)["error"] =~ "already exists"
+      end
+    end
   end
 end

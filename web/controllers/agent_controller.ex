@@ -5,6 +5,7 @@ defmodule Matrix.AgentController do
 
   plug :set_headers
   plug :create_agent when action in [:stop_agent]
+  plug :check_name_uniqueness when action in [:start_agent]
 
   def get_classes(conn, _params) do
     conn
@@ -69,5 +70,20 @@ defmodule Matrix.AgentController do
     conn
     |> assign(:agent, agent)
     |> assign(:update, conn.params["update"] == "true")
+  end
+
+
+  defp check_name_uniqueness(conn, true) do
+    conn
+    |> put_status(:bad_request)
+    |> json(%{error: "Agent with given name already exists."})
+    |> halt
+  end
+  defp check_name_uniqueness(conn, false), do: conn
+  defp check_name_uniqueness(conn, _) do
+    %{"type" => _type, "name" => name} = conn.params["data"]
+
+    conn
+    |> check_name_uniqueness(Agents.exists?(name))
   end
 end

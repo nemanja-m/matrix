@@ -111,12 +111,12 @@ defmodule Matrix.Agents do
   end
 
   @doc """
-  Returns all running agents on cluster for every agent center.
+  Returns all running agents on cluster.
 
   ## Example
 
     Agents.running
-    # => `%{"Mars" => [%Agent{id: %AID{}]}`
+    # => `[%Agent{id: %AID{}]`
 
   """
   @spec running :: %{required(String.t) => list(Matrix.Agent.t)}
@@ -186,6 +186,11 @@ defmodule Matrix.Agents do
   @spec reset :: :ok
   def reset do
     GenServer.cast(__MODULE__, {:reset})
+  end
+
+  @spec exists?(name :: String.t) :: boolean
+  def exists?(name) do
+    running() |> Enum.any?(fn agent -> agent.id.name == name end)
   end
 
   # Server callbacks
