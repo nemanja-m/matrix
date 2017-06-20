@@ -26,3 +26,13 @@ export function getRunningAgents() {
       );
   };
 }
+
+export function getPerformatives() {
+  return (dispatch) => {
+    api
+      .get('/messages')
+      .then(response =>
+        dispatch({ type: 'SET_PERFORMATIVES', performatives: response.data })
+      );
+  }
+}

@@ -4,7 +4,8 @@ import AgentTypes from '../components/AgentTypes'
 import RunningAgents from '../components/RunningAgents'
 import {
   getAgentTypes,
-  getRunningAgents
+  getRunningAgents,
+  getPerformatives
 } from '../actions/agents';
 
 class Root extends Component {
@@ -12,6 +13,7 @@ class Root extends Component {
   componentDidMount() {
     this.props.getAgentTypes();
     this.props.getRunningAgents();
+    this.props.getPerformatives();
   }
 
   render() {
@@ -29,14 +31,16 @@ class Root extends Component {
 const mapStateToProps = (state) => {
   return {
     agentTypes:    state.agents.types,
-    runningAgents: state.agents.running
+    runningAgents: state.agents.running,
+    performatives: state.agents.performatives
   }
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     getAgentTypes:    () => dispatch(getAgentTypes()),
-    getRunningAgents: () => dispatch(getRunningAgents())
+    getRunningAgents: () => dispatch(getRunningAgents()),
+    getPerformatives: () => dispatch(getPerformatives())
   }
 };
 

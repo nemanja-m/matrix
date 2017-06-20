@@ -5,7 +5,7 @@ defmodule Matrix.MessageController do
 
   def performatives(conn, _params) do
     conn
-    |> json(%{data: Matrix.AclMessage.performatives})
+    |> json(Matrix.AclMessage.performatives)
   end
 
   def send_message(conn, %{"data" => message}) do

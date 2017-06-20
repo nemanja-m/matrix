@@ -13,7 +13,7 @@ defmodule Matrix.MessageControllerTest do
 
       ["inform", "cfp", "request", "refuse"]
       |> Enum.each(fn performative ->
-        assert performative in json_response(conn, 200)["data"]
+        assert performative in json_response(conn, 200)
       end)
     end
   end

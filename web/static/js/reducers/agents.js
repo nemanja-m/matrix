@@ -1,6 +1,7 @@
 const initialState = {
-  types:   [],
-  running: []
+  types:          [],
+  running:        [],
+  performatives:  []
 }
 
 const reduce = (state = initialState, action) => {
@@ -18,6 +19,12 @@ const reduce = (state = initialState, action) => {
         ...state,
         running: [...state.running, ...action.runningAgents]
       };
+
+    case 'SET_PERFORMATIVES':
+      return {
+        ...state,
+        performatives: action.performatives
+      }
 
     default:
       return state;
