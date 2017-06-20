@@ -1,7 +1,7 @@
 defmodule Matrix.AgentsTest do
   use ExSpec
 
-  alias Matrix.{Configuration, Cluster, Agents, Agent, AID, AgentType, AgentCenter}
+  alias Matrix.{Env, Cluster, Agents, Agent, AID, AgentType, AgentCenter}
 
   setup do
     Agents.reset
@@ -156,7 +156,7 @@ defmodule Matrix.AgentsTest do
       it "returns first agent center that supports given type" do
         Cluster.register_node(@neptune)
         Agents.add_types(@neptune.aliaz, [@ping])
-        Agents.add_types(Configuration.this_aliaz, [@ping])
+        Agents.add_types(Env.this_aliaz, [@ping])
 
         assert Agents.find_agent_center_with_type(@ping) == @neptune
       end

@@ -1,4 +1,7 @@
-defmodule Matrix.Configuration do
+defmodule Matrix.Env do
+  @moduledoc """
+  Provides information about current and master node.
+  """
 
   def is_master_node? do
     (Application.get_env(:matrix, :master_node) || "true")

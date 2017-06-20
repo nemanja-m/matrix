@@ -12,18 +12,18 @@ defmodule Matrix.ConnectionManager do
 
   require Logger
 
-  alias Matrix.{Configuration, AgentCenter, Cluster, Agents, AgentManager}
+  alias Matrix.{Env, AgentCenter, Cluster, Agents, AgentManager}
 
   @doc """
   Registers non-master node to cluster.
   """
   @spec register_self :: {:ok | :error}
   def register_self do
-    register_self(master_node: Configuration.is_master_node?)
+    register_self(master_node: Env.is_master_node?)
   end
   defp register_self(master_node: false) do
-    url = "#{Configuration.master_node_url}/node"
-    body = Poison.encode! %{data: [Configuration.this]}
+    url = "#{Env.master_node_url}/node"
+    body = Poison.encode! %{data: [Env.this]}
     headers = [
       {"Content-Type", "application/json"}
     ]
@@ -60,7 +60,7 @@ defmodule Matrix.ConnectionManager do
   """
   @spec register_agent_center(agent_center :: Matrix.AgentCenter.t) :: {{:ok, String.t} | {:error, String.t}}
   def register_agent_center(agent_center) do
-    register_agent_center(agent_center, master_node: Configuration.is_master_node?)
+    register_agent_center(agent_center, master_node: Env.is_master_node?)
   end
   defp register_agent_center(agent_center, master_node: true) do
     case handshake(agent_center) do
@@ -139,7 +139,7 @@ defmodule Matrix.ConnectionManager do
   def agent_centers do
     Cluster.nodes
     |> Enum.reject(fn %AgentCenter{aliaz: aliaz} ->
-      Configuration.this_aliaz == aliaz
+      Env.this_aliaz == aliaz
     end)
   end
 

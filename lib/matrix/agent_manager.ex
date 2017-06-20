@@ -6,7 +6,7 @@ defmodule Matrix.AgentManager do
   loads and imports available agent types etc.
   """
 
-  alias Matrix.{ConnectionManager, Configuration, Agents, AgentType, Agent, AgentCenter}
+  alias Matrix.{ConnectionManager, Env, Agents, AgentType, Agent, AgentCenter}
 
   require Logger
 
@@ -17,7 +17,7 @@ defmodule Matrix.AgentManager do
   """
   @spec self_agent_types :: list[AgentType.t]
   def self_agent_types do
-    Agents.types_for(Configuration.this_aliaz)
+    Agents.types_for(Env.this_aliaz)
   end
 
   @doc """
@@ -61,20 +61,20 @@ defmodule Matrix.AgentManager do
 
   @spec start_agent(type :: AgentType.t, name :: String.t) :: :ok
   def start_agent(type, name) do
-    start_agent(type, name, host_node: type in Agents.types_for(Configuration.this_aliaz))
+    start_agent(type, name, host_node: type in Agents.types_for(Env.this_aliaz))
   end
   defp start_agent(type, name, host_node: true) do
     {:ok, _} = apply(String.to_atom("Elixir.Matrix.#{type.name}Supervisor"), :start_child, [name])
 
     agent = Agent.new(name, type)
 
-    Agents.add_running(Configuration.this_aliaz, [agent])
+    Agents.add_running(Env.this_aliaz, [agent])
     Logger.warn "Agent '#{name}' started"
 
     ConnectionManager.agent_centers
     |> Enum.each(fn %AgentCenter{address: address} ->
       url = "#{address}/agents/running"
-      body = Poison.encode!(%{data: %{Configuration.this_aliaz => [agent]}})
+      body = Poison.encode!(%{data: %{Env.this_aliaz => [agent]}})
       headers = [{"Content-Type", "application/json"}]
 
       HTTPoison.post(url, body, headers)
@@ -109,7 +109,7 @@ defmodule Matrix.AgentManager do
   """
   @spec stop_agent(agent :: Agent.t) :: any
   def stop_agent(agent) do
-    stop_agent(agent, host_node: agent.id.host == Configuration.this)
+    stop_agent(agent, host_node: agent.id.host == Env.this)
   end
   defp stop_agent(agent, host_node: true) do
     agent.id.name

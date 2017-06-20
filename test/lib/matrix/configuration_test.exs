@@ -1,7 +1,7 @@
-defmodule ConfigurationTest do
+defmodule EnvTest do
   use ExSpec, async: true
 
-  alias Matrix.Configuration
+  alias Matrix.Env
 
   import Mock
 
@@ -9,7 +9,7 @@ defmodule ConfigurationTest do
     context "when node is master" do
       it "returns true" do
         with_mock Application, [get_env: fn (_, _) -> "true" end] do
-          assert Configuration.is_master_node?
+          assert Env.is_master_node?
         end
       end
     end
@@ -17,7 +17,7 @@ defmodule ConfigurationTest do
     context "when node is not master" do
       it "returns false" do
         with_mock Application, [get_env: fn (_, _) -> "false" end] do
-          refute Configuration.is_master_node?
+          refute Env.is_master_node?
         end
       end
     end
@@ -25,20 +25,20 @@ defmodule ConfigurationTest do
 
   describe ".master_node_url" do
     test_with_mock "returns master node url", Application, [get_env: fn (:matrix, :master_node_url) -> "http://localhost:4000" end] do
-      assert Configuration.master_node_url == "http://localhost:4000"
+      assert Env.master_node_url == "http://localhost:4000"
     end
   end
 
   describe ".this" do
     it "returns this agent center struct" do
-      assert Configuration.this.aliaz == "Mars"
-      assert Configuration.this.address == "localhost:4001"
+      assert Env.this.aliaz == "Mars"
+      assert Env.this.address == "localhost:4001"
     end
   end
 
   describe ".this_address" do
     it "returns url of this node" do
-      assert Configuration.this_address == "localhost:4001"
+      assert Env.this_address == "localhost:4001"
     end
   end
 

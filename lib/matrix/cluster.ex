@@ -13,7 +13,7 @@ defmodule Matrix.Cluster do
   """
   use GenServer
 
-  alias Matrix.{Configuration, AgentCenter}
+  alias Matrix.{Env, AgentCenter}
 
   defmodule State do
     @moduledoc """
@@ -94,7 +94,7 @@ defmodule Matrix.Cluster do
 
   ## Example
 
-    Cluster.exists? Configuration.this
+    Cluster.exists? Env.this
     # => `true`
 
     Cluster.exists? "Venera"
@@ -114,7 +114,7 @@ defmodule Matrix.Cluster do
     Cluster.register_node(%AgentCenter{aliaz: "Mars", address: "MilkyWay"}
     Cluster.reset
     Cluster.nodes
-    # => `[Configuration.this]`
+    # => `[Env.this]`
 
   """
   @spec reset :: :ok
@@ -168,7 +168,7 @@ defmodule Matrix.Cluster do
   end
 
   defp init_state do
-    %State{nodes: %{Configuration.this_aliaz => Configuration.this_address}}
+    %State{nodes: %{Env.this_aliaz => Env.this_address}}
   end
 
 end

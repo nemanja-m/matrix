@@ -3,7 +3,7 @@ defmodule Matrix.Agent do
   Represents agent.
   """
 
-  alias Matrix.{Agent, AID, AgentType, AgentCenter, Configuration}
+  alias Matrix.{Agent, AID, AgentType, AgentCenter, Env}
 
   @derive [Poison.Encoder]
   defstruct [:id]
@@ -51,7 +51,7 @@ defmodule Matrix.Agent do
     %Agent{
       id: %AID{
         name: name,
-        host: Configuration.this,
+        host: Env.this,
         type: type
       }
     }

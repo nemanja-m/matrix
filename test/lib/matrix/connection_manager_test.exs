@@ -4,7 +4,7 @@ defmodule ConnectionManagerTest do
 
   import Mock
 
-  alias Matrix.{Configuration, ConnectionManager, AgentCenter, Cluster}
+  alias Matrix.{Env, ConnectionManager, AgentCenter, Cluster}
 
   setup_all do
     ExVCR.Config.cassette_library_dir("", "fixture/cassettes")
@@ -24,7 +24,7 @@ defmodule ConnectionManagerTest do
       context "with sucessful registration" do
         it "returns :ok" do
           use_cassette "register_node_ok", custom: true do
-            with_mock Configuration, [:passthrough], [is_master_node?: fn -> false end] do
+            with_mock Env, [:passthrough], [is_master_node?: fn -> false end] do
               assert ConnectionManager.register_self == :ok
             end
           end
@@ -34,7 +34,7 @@ defmodule ConnectionManagerTest do
       context "with failed registration" do
         it "returns :error" do
           use_cassette "register_node_error", custom: true do
-            with_mock Configuration, [:passthrough], [is_master_node?: fn -> false end] do
+            with_mock Env, [:passthrough], [is_master_node?: fn -> false end] do
               assert ConnectionManager.register_self == :error
             end
           end
@@ -44,7 +44,7 @@ defmodule ConnectionManagerTest do
 
     context "given node is master" do
       it "doesn't make register request" do
-        with_mock Configuration, [:passthrough], [is_master_node?: fn -> true end] do
+        with_mock Env, [:passthrough], [is_master_node?: fn -> true end] do
           refute ConnectionManager.register_self
         end
       end
@@ -93,7 +93,7 @@ defmodule ConnectionManagerTest do
           ConnectionManager.register_agent_center(@neptune)
 
           url = "#{@neptune.address}/node"
-          body = Poison.encode! %{data: [Configuration.this, Map.from_struct(@venera)]}
+          body = Poison.encode! %{data: [Env.this, Map.from_struct(@venera)]}
           headers = [{"Content-Type", "application/json"}]
 
           assert called HTTPoison.post(url, body, headers)

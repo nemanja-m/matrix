@@ -1,7 +1,7 @@
 defmodule Matrix.AgentControllerTest do
   use Matrix.ConnCase
 
-  alias Matrix.{Agent, AID, AgentType, AgentCenter, Agents, AgentType, Configuration}
+  alias Matrix.{Agent, AID, AgentType, AgentCenter, Agents, AgentType, Env}
 
   setup do
     Agents.reset
@@ -75,7 +75,7 @@ defmodule Matrix.AgentControllerTest do
 
   describe "PUT /agents/running" do
     it "starts new agent with given name", %{conn: conn} do
-      Agents.add_types(Configuration.this_aliaz, [@ping])
+      Agents.add_types(Env.this_aliaz, [@ping])
 
       conn = put conn, "/agents/running", %{data: %{type: @ping_map, name: "Pinger"}}
 
@@ -86,7 +86,7 @@ defmodule Matrix.AgentControllerTest do
 
     context "trying to start agent with taken name" do
       it "returns 400", %{conn: conn} do
-        Agents.add_running(Configuration.this_aliaz, [@ping_agent])
+        Agents.add_running(Env.this_aliaz, [@ping_agent])
 
         conn = put conn, "/agents/running", %{data: %{type: @ping_map, name: "Ping"}}
 

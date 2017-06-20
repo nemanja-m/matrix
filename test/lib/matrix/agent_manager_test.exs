@@ -3,7 +3,7 @@ defmodule Matrix.AgentManagerTest do
 
   import Mock
 
-  alias Matrix.{Cluster, Configuration, Agent, AID, Agents, AgentType, AgentCenter, AgentManager}
+  alias Matrix.{Cluster, Env, Agent, AID, Agents, AgentType, AgentCenter, AgentManager}
 
   setup do
     Agents.reset
@@ -19,7 +19,7 @@ defmodule Matrix.AgentManagerTest do
   @ping_agent %Agent{
     id: %AID{
       name: "Ping",
-      host: Configuration.this,
+      host: Env.this,
       type: @ping
     }
   }
@@ -38,7 +38,7 @@ defmodule Matrix.AgentManagerTest do
 
   describe ".self_agent_types" do
     it "returns agent types on this agent center" do
-      Agents.add_types(Configuration.this_aliaz, [@ping])
+      Agents.add_types(Env.this_aliaz, [@ping])
       Agents.add_types("Neptune", [@pong])
 
       assert AgentManager.self_agent_types == [@ping]
@@ -88,10 +88,10 @@ defmodule Matrix.AgentManagerTest do
   describe ".start_agent" do
     context "current host supports agent type" do
       it "adds running agent to agent center" do
-        Agents.add_types(Configuration.this_aliaz, [@ping])
+        Agents.add_types(Env.this_aliaz, [@ping])
         AgentManager.start_agent(@ping, @ping_agent.id.name)
 
-        assert Agents.running_on(Configuration.this_aliaz) == [@ping_agent]
+        assert Agents.running_on(Env.this_aliaz) == [@ping_agent]
         assert Supervisor.which_children(Matrix.PingSupervisor) |> Enum.count == 1
 
         stop_agent(@ping_agent.id.name)
@@ -100,11 +100,11 @@ defmodule Matrix.AgentManagerTest do
       it "sends post request to other agent centers" do
         with_mock HTTPoison, [post: fn (_, _, _) -> :ok end] do
           Cluster.register_node(@neptune)
-          Agents.add_types(Configuration.this_aliaz, [@ping])
+          Agents.add_types(Env.this_aliaz, [@ping])
           AgentManager.start_agent(@ping, @ping_agent.id.name)
 
           url = "#{@neptune.address}/agents/running"
-          body = Poison.encode!(%{data: %{Configuration.this_aliaz => [@ping_agent]}})
+          body = Poison.encode!(%{data: %{Env.this_aliaz => [@ping_agent]}})
           headers = [{"Content-Type", "application/json"}]
 
           assert called HTTPoison.post(url, body, headers)
@@ -137,19 +137,19 @@ defmodule Matrix.AgentManagerTest do
 
   describe ".stop_agent" do
     it "deletes running agent from agent center" do
-      Agents.add_types(Configuration.this_aliaz, [@ping])
+      Agents.add_types(Env.this_aliaz, [@ping])
       AgentManager.start_agent(@ping, @ping_agent.id.name)
-      assert Agents.running_on(Configuration.this_aliaz) == [@ping_agent]
+      assert Agents.running_on(Env.this_aliaz) == [@ping_agent]
 
       AgentManager.stop_agent(@ping_agent)
-      assert Agents.running_on(Configuration.this_aliaz) == []
+      assert Agents.running_on(Env.this_aliaz) == []
     end
 
     context "agent's host is current node" do
       it "stops agent's gen_server" do
-        Agents.add_types(Configuration.this_aliaz, [@ping])
+        Agents.add_types(Env.this_aliaz, [@ping])
         AgentManager.start_agent(@ping, @ping_agent.id.name)
-        assert Agents.running_on(Configuration.this_aliaz) == [@ping_agent]
+        assert Agents.running_on(Env.this_aliaz) == [@ping_agent]
 
         AgentManager.stop_agent(@ping_agent)
         assert Supervisor.which_children(Matrix.PingSupervisor) == []
@@ -163,7 +163,7 @@ defmodule Matrix.AgentManagerTest do
 
         do
           Cluster.register_node(@neptune)
-          Agents.add_types(Configuration.this_aliaz, [@ping])
+          Agents.add_types(Env.this_aliaz, [@ping])
           AgentManager.start_agent(@ping, @ping_agent.id.name)
           AgentManager.stop_agent(@ping_agent)
 

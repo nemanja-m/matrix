@@ -14,7 +14,7 @@ defmodule Matrix.Agents do
 
   use GenServer
 
-  alias Matrix.{Configuration, Cluster, AgentCenter, AgentType}
+  alias Matrix.{Env, Cluster, AgentCenter, AgentType}
 
   defmodule State do
     @moduledoc """
@@ -225,7 +225,7 @@ defmodule Matrix.Agents do
     pair =
       state.agent_types
       |> Enum.find(fn {aliaz, agent_types} ->
-        (Configuration.this_aliaz != aliaz) && (type in agent_types)
+        (Env.this_aliaz != aliaz) && (type in agent_types)
       end)
 
     case pair do
@@ -270,7 +270,7 @@ defmodule Matrix.Agents do
   end
 
   def init(agent_types) do
-    {:ok, %State{agent_types: %{Matrix.Configuration.this_aliaz => agent_types}}}
+    {:ok, %State{agent_types: %{Matrix.Env.this_aliaz => agent_types}}}
   end
 
 end
