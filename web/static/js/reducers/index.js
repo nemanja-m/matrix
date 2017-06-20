@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux';
 import { reducer as form } from 'redux-form';
-import types from './types';
+import agents from './agents';
 
 const reducers = combineReducers({
   form,
-  agentTypes: types
+  agents
 });
 
-export default reducers ;
+export default reducers;

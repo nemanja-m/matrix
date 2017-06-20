@@ -26,7 +26,7 @@ class Root extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    agentTypes: state.agentTypes
+    agentTypes: state.agents.types
   }
 };
 
