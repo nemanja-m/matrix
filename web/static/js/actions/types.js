@@ -8,7 +8,7 @@ export function getAgentTypes() {
 
         // Parse response and form list of available agent types.
         const agentTypes = Object
-          .entries(response.data.data)
+          .entries(response.data)
           .map( ([host, types]) => types)
           .reduce( (acc, types) => [...acc, ...types] );
 

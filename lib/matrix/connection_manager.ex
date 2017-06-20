@@ -171,7 +171,7 @@ defmodule Matrix.ConnectionManager do
     retry delay: 500, count: 1 do
       case HTTPoison.get(url) do
         {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-          Poison.decode!(body)["data"]
+          Poison.decode!(body)
           |> AgentManager.add_agent_types
           true
 

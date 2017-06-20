@@ -42,7 +42,7 @@ defmodule Matrix.AgentControllerTest do
 
       conn = get conn, "/agents/classes"
 
-      assert json_response(conn, 200)["data"] == %{
+      assert json_response(conn, 200) == %{
         "Mars" => [@ping_map, @pong_map],
         "Neptune" => [@ping_map]
       }
@@ -66,8 +66,8 @@ defmodule Matrix.AgentControllerTest do
 
       conn = get conn, "/agents/running"
 
-      ping = json_response(conn, 200)["data"]["Mars"]    |> List.first |> Agent.from_hash
-      pong = json_response(conn, 200)["data"]["Neptune"] |> List.first |> Agent.from_hash
+      ping = json_response(conn, 200)["Mars"]    |> List.first |> Agent.from_hash
+      pong = json_response(conn, 200)["Neptune"] |> List.first |> Agent.from_hash
 
       assert [ping, pong] == [@ping_agent, @pong_agent]
     end

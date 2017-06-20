@@ -9,7 +9,7 @@ defmodule Matrix.AgentController do
 
   def get_classes(conn, _params) do
     conn
-    |> json(%{data: Agents.types})
+    |> json(Agents.types)
   end
 
   def set_classes(conn, %{"data" => data}) do
@@ -21,7 +21,7 @@ defmodule Matrix.AgentController do
 
   def get_running(conn, _params) do
     conn
-    |> json(%{data: Agents.running_per_agent_center})
+    |> json(Agents.running_per_agent_center)
   end
 
   def set_running(conn, %{"data" => data}) do
