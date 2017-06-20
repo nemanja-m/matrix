@@ -15,9 +15,12 @@ class AgentTypes extends Component {
 
   render() {
     return (
-      <ul>
-        { this._renderAvailableTypes() }
-      </ul>
+      <div>
+        <h1>Agent Classes</h1>
+        <ul>
+          { this._renderAvailableTypes() }
+        </ul>
+      </div>
     )
   }
 }

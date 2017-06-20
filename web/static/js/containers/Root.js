@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import AgentTypes from '../components/AgentTypes'
+import RunningAgents from '../components/RunningAgents'
 import {
   getAgentTypes,
   getRunningAgents
@@ -14,11 +15,12 @@ class Root extends Component {
   }
 
   render() {
-    const { agentTypes } = this.props;
+    const { agentTypes, runningAgents } = this.props;
 
     return (
-      <div style={{ display: 'flex', height: '10vh', flex: '1' }}>
+      <div>
         <AgentTypes types={ agentTypes } />
+        <RunningAgents agents={ runningAgents } />
       </div>
     );
   }
@@ -26,7 +28,8 @@ class Root extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    agentTypes: state.agents.types
+    agentTypes:    state.agents.types,
+    runningAgents: state.agents.running
   }
 };
 

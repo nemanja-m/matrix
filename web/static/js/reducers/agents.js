@@ -13,6 +13,12 @@ const reduce = (state = initialState, action) => {
         types: [...state.types, ...action.types]
       };
 
+    case 'ADD_RUNNING':
+      return {
+        ...state,
+        running: [...state.running, ...action.runningAgents]
+      };
+
     default:
       return state;
   }
