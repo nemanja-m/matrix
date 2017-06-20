@@ -7,13 +7,26 @@ function flatten(responseObject) {
     .reduce((acc, dataArray) => [...acc, ...dataArray], []);
 }
 
+function uniqueTypes(types) {
+  const typeStrings = types.map(type => `${ type.name }:${ type.module }`);
+
+  return [...new Set(typeStrings)]
+    .map(typeString => {
+    [name, module] = typeString.split(':');
+
+    return { name, module };
+  });
+}
+
 export function getAgentTypes() {
   return (dispatch) => {
     api
       .get('/agents/classes')
-      .then(response =>
-        dispatch({ type: 'ADD_TYPES', types: flatten(response.data) })
-      );
+      .then(response => {
+        const types = uniqueTypes(flatten(response.data));
+
+        dispatch({ type: 'ADD_TYPES', types })
+      });
   };
 }
 
