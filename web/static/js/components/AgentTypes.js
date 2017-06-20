@@ -5,7 +5,7 @@ const AgentType = ({ name }) => <li>{ name }</li>;
 class AgentTypes extends Component {
 
   _renderAvailableTypes() {
-    return this.props.types.map( (type) =>
+    return this.props.types.map(type =>
       <AgentType
         key={ window.btoa(`$(type.name):$(type.module)`) }
         name={ type.name }

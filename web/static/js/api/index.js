@@ -30,7 +30,7 @@ export default {
 
     return axios
       .get(url, { headers: headers() })
-      .catch( error => handleError(error) );
+      .catch(error => handleError(error));
   }
 
 };

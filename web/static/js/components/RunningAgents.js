@@ -5,7 +5,7 @@ const Agent = ({ name }) => <li>{ name }</li>;
 class RunningAgents extends Component {
 
   _renderRunningAgents() {
-    return this.props.agents.map( (agent) =>
+    return this.props.agents.map(agent =>
       <Agent
         key={ window.btoa(agent.id.name) }
         name={ agent.id.name }
