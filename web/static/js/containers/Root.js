@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import AgentTypes from '../components/AgentTypes'
-import { getAgentTypes } from '../actions/types';
+import {
+  getAgentTypes,
+  getRunningAgents
+} from '../actions/types';
 
 class Root extends Component {
 
   componentDidMount() {
     this.props.getAgentTypes();
+    this.props.getRunningAgents();
   }
 
   render() {
@@ -28,7 +32,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getAgentTypes: () => dispatch(getAgentTypes())
+    getAgentTypes:    () => dispatch(getAgentTypes()),
+    getRunningAgents: () => dispatch(getRunningAgents())
   }
 };
 

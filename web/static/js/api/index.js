@@ -25,11 +25,12 @@ function handleError(error) {
 
 export default {
 
-  getAgentTypes() {
-    const url = `${ apiUrl() }/agents/classes`;
+  get(resourceUrl) {
+    const url = `${ apiUrl() }${ resourceUrl }`;
 
     return axios
       .get(url, { headers: headers() })
       .catch( error => handleError(error) );
   }
+
 };
