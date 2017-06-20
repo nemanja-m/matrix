@@ -4,7 +4,7 @@ import AgentTypes from '../components/AgentTypes'
 import {
   getAgentTypes,
   getRunningAgents
-} from '../actions/types';
+} from '../actions/agents';
 
 class Root extends Component {
 
