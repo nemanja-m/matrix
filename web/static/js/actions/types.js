@@ -1,6 +1,6 @@
 import api from '../api';
 
-export function getAgentTypes {
+export function getAgentTypes() {
   return (dispatch) => {
     api
       .getAgentTypes()

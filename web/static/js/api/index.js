@@ -28,16 +28,8 @@ export default {
   getAgentTypes() {
     const url = `${ apiUrl() }/agents/classes`;
 
-    axios
+    return axios
       .get(url, { headers: headers() })
-      .then( (response) => {
-        const agentTypes = response.data.data;
-
-        return Object
-          .entries(agentTypes)
-          .map( ([host, types]) => types)
-          .reduce( (acc, types) => [...acc, ...types] );
-      })
-      .catch( (error) => handleError(error) );
+      .catch( error => handleError(error) );
   }
 };

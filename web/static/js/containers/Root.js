@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import AgentTypes from '../components/AgentTypes'
+import { getAgentTypes } from '../actions/types';
 
 class Root extends Component {
+
+  componentDidMount() {
+    this.props.getAgentTypes();
+  }
+
   render() {
     const { agentTypes } = this.props;
 
@@ -20,4 +26,13 @@ const mapStateToProps = (state) => {
   }
 };
 
-export default connect(mapStateToProps, null)(Root);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getAgentTypes: () => dispatch(getAgentTypes())
+  }
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Root);
