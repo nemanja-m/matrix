@@ -6,7 +6,7 @@ import {
   Button
 } from 'react-bootstrap';
 
-const AgentType = ({ name, module }) =>
+const AgentType = ({ name, module, showModal }) =>
   <tr>
     <td>
       <h4><Label bsStyle="primary">{ module }</Label></h4>
@@ -18,7 +18,11 @@ const AgentType = ({ name, module }) =>
     </td>
     <td>
       <h4>
-        <Button bsStyle="success" bsSize="xsmall">
+        <Button
+          bsStyle="success"
+          bsSize="xsmall"
+          onClick={ () => showModal(`Start ${ name } agent`) }
+        >
           Start agent
         </Button>
       </h4>
@@ -33,6 +37,7 @@ class AgentTypes extends Component {
         key={ window.btoa(`${ type.name }:${ type.module }`) }
         name={ type.name }
         module={ type.module }
+        showModal={ this.props.showModal }
       />
     );
   }
@@ -45,9 +50,9 @@ class AgentTypes extends Component {
             <h1 className="text-center">Agent Classes</h1>
           </caption>
           <thead>
-            <th width="30px"></th>
-            <th width="120px"></th>
-            <th width="50px"></th>
+            <tr width="30px"></tr>
+            <tr width="120px"></tr>
+            <tr width="50px"></tr>
           </thead>
           <tbody>
             { this._renderAvailableTypes() }

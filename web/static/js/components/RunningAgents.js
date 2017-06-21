@@ -45,9 +45,9 @@ class RunningAgents extends Component {
             <h1 className="text-center">Running Agents</h1>
           </caption>
           <thead>
-            <th width="30px"></th>
-            <th width="120px"></th>
-            <th width="50px"></th>
+            <tr width="30px"></tr>
+            <tr width="120px"></tr>
+            <tr width="50px"></tr>
           </thead>
           <tbody>
             { this._renderRunningAgents() }
