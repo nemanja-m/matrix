@@ -37,5 +37,12 @@ export default {
     const url = `${ apiUrl() }/agents/running`;
 
     return axios.put(url, { data: { name, type } }, { headers: headers() });
+  },
+
+  stopAgent(name, type, host) {
+    const agentUri = `${ name }/host/${ host.aliaz }/type/${ type.name }/${ type.module }`;
+    const url = `${ apiUrl() }/agents/running/id/${ agentUri }`;
+
+    return axios.delete(url);
   }
 };

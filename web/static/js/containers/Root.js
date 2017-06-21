@@ -12,7 +12,8 @@ import {
   getAgentTypes,
   getRunningAgents,
   getPerformatives,
-  startAgent
+  startAgent,
+  stopAgent
 } from '../actions/agents';
 import {
   showModal,
@@ -38,7 +39,10 @@ class Root extends Component {
             showModal={ this.props.showModal }
           />
           <Col md={ 6 } />
-          <RunningAgents agents={ runningAgents } />
+          <RunningAgents
+            agents={ runningAgents }
+            stopAgent= { this.props.stopAgent }
+          />
         </Row>
 
         <StartAgentModal
@@ -70,7 +74,8 @@ const mapDispatchToProps = (dispatch) => {
     hideModal: () => dispatch(hideModal()),
     showModal: (type) => dispatch(showModal(type)),
 
-    startAgent: (name, type) => dispatch(startAgent(name, type))
+    startAgent: (name, type) => dispatch(startAgent(name, type)),
+    stopAgent:  (name, type, host) => dispatch(stopAgent(name, type, host))
   }
 };
 

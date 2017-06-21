@@ -64,3 +64,10 @@ export function startAgent(name, type) {
       })
       .then(response => dispatch({ type: 'HIDE_MODAL' }));
 }
+
+export function stopAgent(name, type, host) {
+  return (dispatch) =>
+    api
+      .stopAgent(name, type, host)
+      .then(response => dispatch({ type: 'STOP_AGENT', name }));
+}

@@ -6,10 +6,10 @@ import {
   Button
 } from 'react-bootstrap';
 
-const Agent = ({ name, type }) =>
+const Agent = ({ name, type, host, stopAgent }) =>
   <tr>
     <td>
-      <h4><Label bsStyle="success">{ type }</Label></h4>
+      <h4><Label bsStyle="success">{ type.name }</Label></h4>
     </td>
     <td>
       <h4 className="text-danger text-center">
@@ -18,7 +18,7 @@ const Agent = ({ name, type }) =>
     </td>
     <td>
       <h4>
-        <Button bsStyle="danger" bsSize="xsmall">
+        <Button bsStyle="danger" bsSize="xsmall" onClick={ () => stopAgent(name, type, host) }>
           Stop agent
         </Button>
       </h4>
@@ -32,7 +32,9 @@ class RunningAgents extends Component {
       <Agent
         key={ window.btoa(agent.id.name) }
         name={ agent.id.name }
-        type={ agent.id.type.name }
+        type={ agent.id.type }
+        host={ agent.id.host }
+        stopAgent={ this.props.stopAgent }
       />
     );
   }
