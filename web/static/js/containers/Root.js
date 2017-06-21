@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import AgentTypes from '../components/AgentTypes'
 import RunningAgents from '../components/RunningAgents'
+import { Grid, Row, Col } from 'react-bootstrap';
 import {
   getAgentTypes,
   getRunningAgents,
@@ -20,10 +21,13 @@ class Root extends Component {
     const { agentTypes, runningAgents } = this.props;
 
     return (
-      <div>
-        <AgentTypes types={ agentTypes } />
-        <RunningAgents agents={ runningAgents } />
-      </div>
+      <Grid fluid={ true } style={ { margin: "10rem 15rem" } }>
+        <Row>
+          <AgentTypes types={ agentTypes } />
+          <Col md={ 6 } />
+          <RunningAgents agents={ runningAgents } />
+        </Row>
+      </Grid>
     );
   }
 }
