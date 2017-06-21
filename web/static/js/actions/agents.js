@@ -52,7 +52,15 @@ export function getPerformatives() {
 }
 
 export function startAgent(name, type) {
-  return (dispatch) => {
-    throw new SubmissionError({ agentName: 'Agent with given name exists.' });
-  }
+  return (dispatch) =>
+    api
+      .startAgent(name, type)
+      .catch(error => {
+        if (error.response) {
+          throw new SubmissionError({ agentName: 'Agent with given name exists.' });
+        } else {
+          throw new SubmissionError({ agentName: 'Something went wrong, try again.' });
+        }
+      })
+      .then(response => dispatch({ type: 'HIDE_MODAL' }));
 }

@@ -8,7 +8,7 @@ class StartAgentModal extends Component {
   _handleStartAgent(values) {
     const { startAgent, type } = this.props;
 
-    startAgent(values.agentName, type);
+    return startAgent(values.agentName, type);
   }
 
   render() {

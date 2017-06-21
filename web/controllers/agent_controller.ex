@@ -72,7 +72,6 @@ defmodule Matrix.AgentController do
     |> assign(:update, conn.params["update"] == "true")
   end
 
-
   defp check_name_uniqueness(conn, true) do
     conn
     |> put_status(:bad_request)

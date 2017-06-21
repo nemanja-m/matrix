@@ -31,6 +31,11 @@ export default {
     return axios
       .get(url, { headers: headers() })
       .catch(error => handleError(error));
-  }
+  },
 
+  startAgent(name, type) {
+    const url = `${ apiUrl() }/agents/running`;
+
+    return axios.put(url, { data: { name, type } }, { headers: headers() });
+  }
 };

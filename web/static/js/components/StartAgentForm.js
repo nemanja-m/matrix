@@ -19,6 +19,7 @@ const renderField = ({ input, label, type, meta: { touched, error } }) => (
         { ...input }
         placeholder={ label }
         type={ type }
+        autoComplete="off"
       />
     </FormGroup>
     {
