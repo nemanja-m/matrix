@@ -1,6 +1,6 @@
 const initialState = {
   show: false,
-  title: "Start agent"
+  type: {}
 }
 
 const reduce = (state = initialState, action) => {
@@ -9,7 +9,7 @@ const reduce = (state = initialState, action) => {
 
     case 'SHOW_MODAL':
       return {
-        title: action.title,
+        type: action.agentType,
         show: true
       };
 

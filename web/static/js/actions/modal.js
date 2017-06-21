@@ -1,5 +1,5 @@
-export function showModal(title) {
-  return (dispatch) => dispatch({ type: 'SHOW_MODAL', title })
+export function showModal(agentType) {
+  return (dispatch) => dispatch({ type: 'SHOW_MODAL', agentType })
 }
 
 export function hideModal() {

@@ -11,7 +11,8 @@ import {
 import {
   getAgentTypes,
   getRunningAgents,
-  getPerformatives
+  getPerformatives,
+  startAgent
 } from '../actions/agents';
 import {
   showModal,
@@ -42,9 +43,9 @@ class Root extends Component {
 
         <StartAgentModal
           show={ modal.show }
-          title={ modal.title }
+          type={ modal.type }
           onHide={ this.props.hideModal }
-          agents={ runningAgents }
+          startAgent={ this.props.startAgent }
         />
       </Grid>
     );
@@ -67,7 +68,9 @@ const mapDispatchToProps = (dispatch) => {
     getPerformatives: () => dispatch(getPerformatives()),
 
     hideModal: () => dispatch(hideModal()),
-    showModal: (title) => dispatch(showModal(title))
+    showModal: (type) => dispatch(showModal(type)),
+
+    startAgent: (name, type) => dispatch(startAgent(name, type))
   }
 };
 

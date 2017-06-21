@@ -1,4 +1,5 @@
 import api from '../api';
+import { SubmissionError  } from 'redux-form'
 
 function flatten(responseObject) {
   return Object
@@ -47,5 +48,11 @@ export function getPerformatives() {
       .then(response =>
         dispatch({ type: 'SET_PERFORMATIVES', performatives: response.data })
       );
+  }
+}
+
+export function startAgent(name, type) {
+  return (dispatch) => {
+    throw new SubmissionError({ agentName: 'Agent with given name exists.' });
   }
 }

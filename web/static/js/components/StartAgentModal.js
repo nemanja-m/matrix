@@ -1,19 +1,28 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Modal } from 'react-bootstrap';
+import StartAgentForm from './StartAgentForm';
 
 class StartAgentModal extends Component {
 
+  _handleStartAgent(values) {
+    const { startAgent, type } = this.props;
+
+    startAgent(values.agentName, type);
+  }
+
   render() {
-    const { show, onHide, agents, title } = this.props;
+    const { show, onHide, type } = this.props;
 
     return (
       <Modal show={ show } onHide={ onHide } bsSize="small">
         <Modal.Header closeButton>
-          <Modal.Title>{ title }</Modal.Title>
+          <Modal.Title>
+            <strong className="text-success">{ `Start ${ type.name } agent` }</strong>
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h4>Hello world</h4>
+          <StartAgentForm onSubmit={ (values) => this._handleStartAgent(values) }/>
         </Modal.Body>
       </Modal>
     );

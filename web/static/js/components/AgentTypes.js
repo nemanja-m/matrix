@@ -21,7 +21,7 @@ const AgentType = ({ name, module, showModal }) =>
         <Button
           bsStyle="success"
           bsSize="xsmall"
-          onClick={ () => showModal(`Start ${ name } agent`) }
+          onClick={ () => showModal({ name, module }) }
         >
           Start agent
         </Button>
