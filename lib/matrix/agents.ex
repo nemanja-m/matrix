@@ -198,6 +198,11 @@ defmodule Matrix.Agents do
     running() |> Enum.any?(fn agent -> agent.id.name == name end)
   end
 
+  @spec find_by_name(agent_name :: String.t) :: Agent.t | nil
+  def find_by_name(agent_name) do
+    running() |> Enum.find(fn agent -> agent.id.name =~ agent_name end)
+  end
+
   # Server callbacks
 
   def handle_call({:types}, _from, state) do

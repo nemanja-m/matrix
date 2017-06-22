@@ -194,4 +194,18 @@ defmodule Matrix.AgentsTest do
       assert Agents.running_on("Mars") == []
     end
   end
+
+  describe ".find_by_name" do
+    it "returns agent if it's running" do
+      Agents.add_running("Mars", [@ping_agent])
+
+      assert Agents.find_by_name(@ping_agent.id.name) == @ping_agent
+    end
+
+    it "returns nil if agent isn't running" do
+      Agents.add_running("Mars", [@ping_agent])
+
+      refute Agents.find_by_name(@pong_agent.id.name)
+    end
+  end
 end
