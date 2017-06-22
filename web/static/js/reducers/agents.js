@@ -26,6 +26,12 @@ const reduce = (state = initialState, action) => {
         types: action.types
       };
 
+    case 'UPDATE_RUNNING':
+      return {
+        ...state,
+        running: action.running
+      };
+
     case 'START_AGENT':
       return {
         ...state,

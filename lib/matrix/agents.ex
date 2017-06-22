@@ -180,6 +180,11 @@ defmodule Matrix.Agents do
     GenServer.cast(__MODULE__, {:delete_running, agent})
   end
 
+  @spec delete_running_for(agent_center :: String.t) :: :ok
+  def delete_running_for(agent_center) do
+    GenServer.cast(__MODULE__, {:delete_running_for, agent_center})
+  end
+
   @doc """
   Resets data about agent types and running agents.
   """
@@ -263,6 +268,10 @@ defmodule Matrix.Agents do
     new_running_agents = state.running_agents[agent.id.host.aliaz] |> List.delete(agent)
 
     {:noreply, put_in(state.running_agents[agent.id.host.aliaz], new_running_agents)}
+  end
+
+  def handle_cast({:delete_running_for, agent_center}, state) do
+    {:noreply, put_in(state.running_agents[agent_center], [])}
   end
 
   def handle_cast({:reset}, _state) do

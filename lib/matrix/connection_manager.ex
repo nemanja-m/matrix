@@ -126,10 +126,13 @@ defmodule Matrix.ConnectionManager do
   def clear_agent_center_data(agent_center) do
     Cluster.unregister_node(agent_center)
     Agents.delete_types_for(agent_center)
+    Agents.delete_running_for(agent_center)
 
     Logger.warn "'#{agent_center}' removed from cluster"
 
-    # TODO Delete agent data
+    # Update clients via web sockets
+    Matrix.Endpoint.broadcast! "agents", "types:update", Agents.types
+    Matrix.Endpoint.broadcast! "agents", "running:update", %{agents: Agents.running}
   end
 
   @doc """

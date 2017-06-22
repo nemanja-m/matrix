@@ -184,4 +184,14 @@ defmodule Matrix.AgentsTest do
       end
     end
   end
+
+  describe ".delete_running_for" do
+    it "deletes running agnets on given node" do
+      Agents.add_running("Mars", [@ping_agent])
+      assert Agents.running_on("Mars") == [@ping_agent]
+
+      Agents.delete_running_for("Mars")
+      assert Agents.running_on("Mars") == []
+    end
+  end
 end

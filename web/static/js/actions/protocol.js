@@ -26,6 +26,10 @@ export function useWebSockets() {
       dispatch({ type: 'UPDATE_TYPES', types });
     });
 
+    channel.on('running:update', (response) => {
+      dispatch({ type: 'UPDATE_RUNNING', running: response.agents });
+    });
+
     channel
       .join()
       .receive('ok', () => console.log('Connected to agents channel') );
