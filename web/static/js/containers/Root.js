@@ -52,7 +52,7 @@ class Root extends Component {
           <Col md={ 6 } />
           <RunningAgents
             agents={ runningAgents }
-            stopAgent= { this.props.stopAgent }
+            stopAgent={ (name, type, host) => this.props.stopAgent(name, type, host, protocol) }
           />
         </Row>
 
@@ -87,7 +87,7 @@ const mapDispatchToProps = (dispatch) => {
     showModal: (type) => dispatch(showModal(type)),
 
     startAgent: (name, type, protocol) => dispatch(startAgent(name, type, protocol)),
-    stopAgent:  (name, type, host) => dispatch(stopAgent(name, type, host)),
+    stopAgent:  (name, type, host, protocol) => dispatch(stopAgent(name, type, host, protocol)),
 
     useHttp:       () => dispatch(useHttp()),
     useWebSockets: () => dispatch(useWebSockets())

@@ -1,7 +1,7 @@
 defmodule Matrix.AgentsChannel do
   use Phoenix.Channel
 
-  alias Matrix.{Agents, AgentManager, AgentType}
+  alias Matrix.{Agent, AID, AgentCenter, Cluster, Agents, AgentManager, AgentType}
 
   def join("agents", _message, socket) do
     {:ok, socket}
@@ -18,5 +18,27 @@ defmodule Matrix.AgentsChannel do
         _        -> {:reply, :error, socket}
       end
     end
+  end
+
+  def handle_in("agent:stop", agent_data, socket) do
+    create_agent(agent_data) |> AgentManager.stop_agent
+
+    {:noreply, socket}
+  end
+
+  defp create_agent(agent_data) do
+    %{
+      "name" => name,
+      "type" => %{"name" => type_name, "module" => module},
+      "host" => %{"aliaz" => aliaz, "address" => _addr},
+    } = agent_data
+
+    %Agent{
+      id: %AID{
+        name: name,
+        type: %AgentType{name: type_name, module: module},
+        host: %AgentCenter{aliaz: aliaz, address: Cluster.address_for(aliaz)}
+      }
+    }
   end
 end

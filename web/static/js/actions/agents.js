@@ -85,9 +85,16 @@ export function startAgent(name, type, protocol) {
   }
 }
 
-export function stopAgent(name, type, host) {
-  return (dispatch) =>
-    api
-      .stopAgent(name, type, host)
-      .then(response => dispatch({ type: 'STOP_AGENT', name }));
+export function stopAgent(name, type, host, protocol) {
+  return (dispatch) => {
+    if (protocol.http) {
+      api
+        .stopAgent(name, type, host)
+        .then(response => dispatch({ type: 'STOP_AGENT', name }));
+    } else {
+      protocol
+        .channel
+        .push('agent:stop', { name, type, host })
+    }
+  }
 }
