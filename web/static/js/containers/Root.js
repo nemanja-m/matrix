@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import AgentTypes from '../components/AgentTypes';
 import RunningAgents from '../components/RunningAgents';
 import StartAgentModal from '../components/StartAgentModal';
+import ProtocolSwitch from '../components/ProtocolSwitch';
 import {
   Grid,
   Row,
@@ -15,6 +16,10 @@ import {
   startAgent,
   stopAgent
 } from '../actions/agents';
+import {
+  useHttp,
+  useWebSockets
+} from '../actions/protocol';
 import {
   showModal,
   hideModal
@@ -29,10 +34,15 @@ class Root extends Component {
   }
 
   render() {
-    const { agentTypes, runningAgents, modal } = this.props;
+    const { agentTypes, runningAgents, modal, protocol } = this.props;
 
     return (
-      <Grid fluid={ true } style={ { margin: "10rem 15rem" } }>
+      <Grid fluid={ true } style={ { margin: "3rem 15rem" } }>
+        <ProtocolSwitch
+          protocol={ protocol }
+          useHttp={ this.props.useHttp }
+          useWebSockets={ this.props.useWebSockets }
+        />
         <Row>
           <AgentTypes
             types={ agentTypes }
@@ -61,7 +71,8 @@ const mapStateToProps = (state) => {
     agentTypes:    state.agents.types,
     runningAgents: state.agents.running,
     performatives: state.agents.performatives,
-    modal:         state.modal
+    modal:         state.modal,
+    protocol:      state.protocol
   }
 };
 
@@ -75,7 +86,10 @@ const mapDispatchToProps = (dispatch) => {
     showModal: (type) => dispatch(showModal(type)),
 
     startAgent: (name, type) => dispatch(startAgent(name, type)),
-    stopAgent:  (name, type, host) => dispatch(stopAgent(name, type, host))
+    stopAgent:  (name, type, host) => dispatch(stopAgent(name, type, host)),
+
+    useHttp:       () => dispatch(useHttp()),
+    useWebSockets: () => dispatch(useWebSockets())
   }
 };
 
