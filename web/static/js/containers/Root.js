@@ -31,6 +31,7 @@ class Root extends Component {
     this.props.getAgentTypes();
     this.props.getRunningAgents();
     this.props.getPerformatives();
+    this.props.useWebSockets();
   }
 
   render() {
