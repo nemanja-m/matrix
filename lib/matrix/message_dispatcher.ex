@@ -17,7 +17,14 @@ defmodule Matrix.MessageDispatcher do
     if host == Env.this do
       GenServer.call process_name(name), {:handle_message, message}
     else
-      Logger.warn "Agent is running on #{host.aliaz} node"
+      Logger.warn "Agent: #{name} is running on #{host.aliaz} node"
+      Logger.warn "Redirecting ..."
+
+      url = "#{host.address}/messages"
+      body = Poison.encode! %{data: put_in(message.receivers, [name])}
+      headers = [{"Content-Type", "application/json"}]
+
+      HTTPoison.post(url, body, headers)
     end
   end
 
