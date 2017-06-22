@@ -68,11 +68,19 @@ export function startAgent(name, type, protocol) {
           dispatch({ type: 'START_AGENT', agent: response.data });
         });
     } else {
-      protocol
-        .channel
-        .push('agent:start', { name, type })
-        .receive('ok', response => dispatch({ type: 'HIDE_MODAL' }) )
-        .receive('error', response =>  alert('Agent with given name exists.') );
+      const promise = new Promise((resolve, reject) => {
+        protocol
+          .channel
+          .push('agent:start', { name, type })
+          .receive('ok', response => resolve('ok') )
+          .receive('error', response => reject('Agent with given name exists.') );
+      })
+
+      promise
+        .then(response => dispatch({ type: 'HIDE_MODAL' }) )
+        .catch(error => { throw new SubmissionError({ agentName: error }); });
+
+      return promise;
     }
   }
 }
