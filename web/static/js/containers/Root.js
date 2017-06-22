@@ -15,7 +15,8 @@ import {
   getRunningAgents,
   getPerformatives,
   startAgent,
-  stopAgent
+  stopAgent,
+  sendAclMessage
 } from '../actions/agents';
 import {
   useHttp,
@@ -54,7 +55,7 @@ class Root extends Component {
           <AclMessageForm
             performatives={ this.props.performatives }
             runningAgents={ runningAgents }
-            onSubmit={ (values) => console.log(values) }
+            onSubmit={ (values) => this.props.sendAclMessage(values, protocol) }
           />
           <RunningAgents
             agents={ runningAgents }
@@ -96,7 +97,9 @@ const mapDispatchToProps = (dispatch) => {
     stopAgent:  (name, type, host, protocol) => dispatch(stopAgent(name, type, host, protocol)),
 
     useHttp:       () => dispatch(useHttp()),
-    useWebSockets: () => dispatch(useWebSockets())
+    useWebSockets: () => dispatch(useWebSockets()),
+
+    sendAclMessage: (values, protocol) => dispatch(sendAclMessage(values, protocol))
   }
 };
 

@@ -30,10 +30,16 @@ const renderField = ({ input: { value, ...rest}, label, type, componentClass, mu
 )
 class AclMessageForm extends Component {
 
+  _parsePerformative(performative) {
+    const capitalized = performative.charAt(0).toUpperCase() + performative.slice(1);
+
+    return capitalized.replace("_", " ");
+  }
+
   _renderPerformatives() {
     const options =  this.props.performatives.map(performative =>
       <option key={ performative } value={ performative }>
-        { performative }
+        { this._parsePerformative(performative) }
       </option>
     );
 
@@ -52,20 +58,20 @@ class AclMessageForm extends Component {
 
   _renderTextFields() {
     return [
-      'Content',
-      'Language',
-      'Encoding',
-      'Ontology',
-      'Protocol',
-      'Conversation ID',
-      'Reply with'
+      'content',
+      'language',
+      'encoding',
+      'ontology',
+      'protocol',
+      'conversation_id',
+      'reply_with'
     ].map(fieldName =>
       <Field
         key={ fieldName }
         name={ fieldName }
         component={ renderField }
         type="text"
-        label={ fieldName }
+        label={ this._parsePerformative(fieldName) }
       />
     );
   }
