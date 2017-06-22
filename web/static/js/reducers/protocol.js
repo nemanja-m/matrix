@@ -1,7 +1,7 @@
 const initialState = {
   http: true,
   webSockets: false,
-  socket: null
+  channel: null
 }
 
 const reduce = (state = initialState, action) => {
@@ -12,14 +12,14 @@ const reduce = (state = initialState, action) => {
       return {
         http: true,
         webSockets: false,
-        socket: null
+        channel: null
       };
 
     case 'USE_WEB_SOCKETS':
       return {
         http: false,
         webSocket: true,
-        socket: action.socket
+        channel: action.channel
       };
 
     default:

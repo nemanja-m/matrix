@@ -60,7 +60,7 @@ class Root extends Component {
           show={ modal.show }
           type={ modal.type }
           onHide={ this.props.hideModal }
-          startAgent={ this.props.startAgent }
+          startAgent={ (name, type) => this.props.startAgent(name, type, protocol) }
         />
       </Grid>
     );
@@ -86,7 +86,7 @@ const mapDispatchToProps = (dispatch) => {
     hideModal: () => dispatch(hideModal()),
     showModal: (type) => dispatch(showModal(type)),
 
-    startAgent: (name, type) => dispatch(startAgent(name, type)),
+    startAgent: (name, type, protocol) => dispatch(startAgent(name, type, protocol)),
     stopAgent:  (name, type, host) => dispatch(stopAgent(name, type, host)),
 
     useHttp:       () => dispatch(useHttp()),

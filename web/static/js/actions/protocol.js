@@ -23,6 +23,6 @@ export function useWebSockets() {
       .join()
       .receive('ok', () => console.log('Connected to agents channel') );
 
-    dispatch({ type: 'USE_WEB_SOCKETS', socket });
+    dispatch({ type: 'USE_WEB_SOCKETS', channel });
   };
 }

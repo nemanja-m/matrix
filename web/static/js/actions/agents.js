@@ -51,21 +51,30 @@ export function getPerformatives() {
   }
 }
 
-export function startAgent(name, type) {
-  return (dispatch) =>
-    api
-      .startAgent(name, type)
-      .catch(error => {
-        if (error.response) {
-          throw new SubmissionError({ agentName: 'Agent with given name exists.' });
-        } else {
-          throw new SubmissionError({ agentName: 'Something went wrong, try again.' });
-        }
-      })
-      .then(response => {
-        dispatch({ type: 'HIDE_MODAL' });
-        dispatch({ type: 'START_AGENT', agent: response.data });
-      });
+export function startAgent(name, type, protocol) {
+  return (dispatch) => {
+    if (protocol.http) {
+      return api
+        .startAgent(name, type)
+        .catch(error => {
+          if (error.response) {
+            throw new SubmissionError({ agentName: 'Agent with given name exists.' });
+          } else {
+            throw new SubmissionError({ agentName: 'Something went wrong, try again.' });
+          }
+        })
+        .then(response => {
+          dispatch({ type: 'HIDE_MODAL' });
+          dispatch({ type: 'START_AGENT', agent: response.data });
+        });
+    } else {
+      protocol
+        .channel
+        .push('agent:start', { name, type })
+        .receive('ok', response => dispatch({ type: 'HIDE_MODAL' }) )
+        .receive('error', response =>  alert('Agent with given name exists.') );
+    }
+  }
 }
 
 export function stopAgent(name, type, host) {
