@@ -34,10 +34,10 @@ defmodule Matrix.AgentController do
   def start_agent(conn, %{"data" => %{"type" => type, "name" => name}}) do
     agent_type = %AgentType{name: type["name"], module: type["module"]}
 
-    AgentManager.start_agent(agent_type, name)
-
-    conn
-    |> json("ok")
+    case AgentManager.start_agent(agent_type, name) do
+      {:ok, agent}     -> conn |> json(agent)
+      {:error, reason} -> conn |> put_status(500) |> json(%{error: reason})
+    end
   end
 
   def stop_agent(conn, _params) do

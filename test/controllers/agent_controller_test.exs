@@ -1,7 +1,9 @@
 defmodule Matrix.AgentControllerTest do
   use Matrix.ConnCase
 
-  alias Matrix.{Agent, AID, AgentType, AgentCenter, Agents, AgentType, Env}
+  import Mock
+
+  alias Matrix.{AgentManager, Agent, AID, AgentType, AgentCenter, Agents, AgentType, Env}
 
   setup do
     Agents.reset
@@ -91,6 +93,18 @@ defmodule Matrix.AgentControllerTest do
         conn = put conn, "/agents/running", %{data: %{type: @ping_map, name: "Ping"}}
 
         assert json_response(conn, 400)["error"] =~ "already exists"
+      end
+    end
+
+    context "when there is server side error" do
+      it "returns 500" do
+        with_mock AgentManager, [start_agent: fn (_, _) -> {:error, "can't be started"} end] do
+          Agents.add_types(Env.this_aliaz, [@ping])
+
+          conn = put conn, "/agents/running", %{data: %{type: @ping_map, name: "Ping"}}
+
+          assert json_response(conn, 500)["error"] =~ "can't be started"
+        end
       end
     end
   end

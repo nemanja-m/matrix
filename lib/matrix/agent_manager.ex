@@ -64,21 +64,27 @@ defmodule Matrix.AgentManager do
     start_agent(type, name, host_node: type in Agents.types_for(Env.this_aliaz))
   end
   defp start_agent(type, name, host_node: true) do
-    {:ok, _} = apply(String.to_atom("Elixir.Matrix.#{type.name}Supervisor"), :start_child, [name])
+    case apply(String.to_atom("Elixir.Matrix.#{type.name}Supervisor"), :start_child, [name]) do
+      {:ok, _} ->
+        agent = Agent.new(name, type)
 
-    agent = Agent.new(name, type)
+        Agents.add_running(Env.this_aliaz, [agent])
+        Logger.warn "Agent '#{name}' started"
 
-    Agents.add_running(Env.this_aliaz, [agent])
-    Logger.warn "Agent '#{name}' started"
+        ConnectionManager.agent_centers
+        |> Enum.each(fn %AgentCenter{address: address} ->
+          url = "#{address}/agents/running"
+          body = Poison.encode!(%{data: %{Env.this_aliaz => [agent]}})
+          headers = [{"Content-Type", "application/json"}]
 
-    ConnectionManager.agent_centers
-    |> Enum.each(fn %AgentCenter{address: address} ->
-      url = "#{address}/agents/running"
-      body = Poison.encode!(%{data: %{Env.this_aliaz => [agent]}})
-      headers = [{"Content-Type", "application/json"}]
+          HTTPoison.post(url, body, headers)
+        end)
 
-      HTTPoison.post(url, body, headers)
-    end)
+        {:ok, agent}
+
+      _ ->
+        {:error, "Agent can't be started"}
+    end
   end
   defp start_agent(type, name, host_node: false) do
     case Agents.find_agent_center_with_type(type) do

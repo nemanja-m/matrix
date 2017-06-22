@@ -89,7 +89,7 @@ defmodule Matrix.AgentManagerTest do
     context "current host supports agent type" do
       it "adds running agent to agent center" do
         Agents.add_types(Env.this_aliaz, [@ping])
-        AgentManager.start_agent(@ping, @ping_agent.id.name)
+        {:ok, _} = AgentManager.start_agent(@ping, @ping_agent.id.name)
 
         assert Agents.running_on(Env.this_aliaz) == [@ping_agent]
         assert Supervisor.which_children(Matrix.PingSupervisor) |> Enum.count == 1
@@ -101,7 +101,7 @@ defmodule Matrix.AgentManagerTest do
         with_mock HTTPoison, [post: fn (_, _, _) -> :ok end] do
           Cluster.register_node(@neptune)
           Agents.add_types(Env.this_aliaz, [@ping])
-          AgentManager.start_agent(@ping, @ping_agent.id.name)
+          {:ok, _} = AgentManager.start_agent(@ping, @ping_agent.id.name)
 
           url = "#{@neptune.address}/agents/running"
           body = Poison.encode!(%{data: %{Env.this_aliaz => [@ping_agent]}})
@@ -111,6 +111,18 @@ defmodule Matrix.AgentManagerTest do
 
           stop_agent(@ping_agent.id.name)
         end
+      end
+
+      it "returns error when agent can't be started" do
+        Agents.add_types(Env.this_aliaz, [@ping])
+        {:ok, _} = AgentManager.start_agent(@ping, @ping_agent.id.name)
+
+        # We are trying to start agent with same name
+        {:error, reason} = AgentManager.start_agent(@ping, @ping_agent.id.name)
+
+        assert reason =~ "Agent can't be started"
+
+        stop_agent(@ping_agent.id.name)
       end
     end
 
