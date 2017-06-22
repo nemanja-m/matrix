@@ -67,4 +67,15 @@ defmodule Matrix.AclMessage do
     ]
   end
 
+  def from_hash(hash) do
+    message =
+      hash
+      |> Poison.encode!
+      |> Poison.decode!(as: %__MODULE__{})
+
+    atom_performative = message.performative |> String.to_existing_atom
+
+    put_in(message.performative, atom_performative)
+  end
+
 end
