@@ -1,23 +1,6 @@
 import api from '../api';
 import { SubmissionError  } from 'redux-form'
-
-function flatten(responseObject) {
-  return Object
-    .entries(responseObject)
-    .map(([host, dataArray]) => dataArray)
-    .reduce((acc, dataArray) => [...acc, ...dataArray], []);
-}
-
-function uniqueTypes(types) {
-  const typeStrings = types.map(type => `${ type.name }:${ type.module }`);
-
-  return [...new Set(typeStrings)]
-    .map(typeString => {
-    [name, module] = typeString.split(':');
-
-    return { name, module };
-  });
-}
+import { flatten, uniqueTypes } from '../helpers';
 
 export function getAgentTypes() {
   return (dispatch) => {

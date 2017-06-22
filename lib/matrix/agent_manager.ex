@@ -34,6 +34,9 @@ defmodule Matrix.AgentManager do
 
       Agents.add_types(aliaz, agent_types)
     end)
+
+    # Update clients via web sockets
+    Matrix.Endpoint.broadcast! "agents", "types:update", Agents.types
   end
 
   @doc """

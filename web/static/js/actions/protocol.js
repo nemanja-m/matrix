@@ -1,4 +1,5 @@
 import { Socket } from 'phoenix';
+import { flatten, uniqueTypes } from '../helpers';
 
 export function useHttp() {
   return (dispatch) => dispatch({ type: 'USE_HTTP' });
@@ -17,6 +18,12 @@ export function useWebSockets() {
 
     channel.on('agent:stop', (response) => {
       dispatch({ type: 'STOP_AGENT', name: response.name });
+    });
+
+    channel.on('types:update', (response) => {
+      const types = uniqueTypes(flatten(response));
+
+      dispatch({ type: 'UPDATE_TYPES', types });
     });
 
     channel

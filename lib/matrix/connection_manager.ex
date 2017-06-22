@@ -207,7 +207,7 @@ defmodule Matrix.ConnectionManager do
   defp send_new_agent_center_agent_types({:ok, agent_center}) do
     agent_centers()
     |> Enum.map(fn %AgentCenter{address: address} ->
-      url = "#{address}/agent/classes"
+      url = "#{address}/agents/classes"
       body = Poison.encode! %{data: %{agent_center.aliaz => Agents.types_for(agent_center.aliaz)}}
       headers = [
         {"Content-Type", "application/json"}
