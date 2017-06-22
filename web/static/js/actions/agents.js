@@ -62,7 +62,10 @@ export function startAgent(name, type) {
           throw new SubmissionError({ agentName: 'Something went wrong, try again.' });
         }
       })
-      .then(response => dispatch({ type: 'HIDE_MODAL' }));
+      .then(response => {
+        dispatch({ type: 'HIDE_MODAL' });
+        dispatch({ type: 'START_AGENT', agent: response.data });
+      });
 }
 
 export function stopAgent(name, type, host) {

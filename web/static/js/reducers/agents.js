@@ -20,6 +20,12 @@ const reduce = (state = initialState, action) => {
         running: [...state.running, ...action.runningAgents]
       };
 
+    case 'START_AGENT':
+      return {
+        ...state,
+        running: [...state.running, action.agent]
+      };
+
     case 'STOP_AGENT':
       const running = state.running.filter(agent => agent.id.name !== action.name);
 
