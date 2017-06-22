@@ -1,7 +1,7 @@
 defmodule Matrix.MessageController do
   use Matrix.Web, :controller
 
-  alias Matrix.MessageDispatcher
+  alias Matrix.{MessageDispatcher, AclMessage}
 
   plug :set_headers
 
@@ -11,7 +11,9 @@ defmodule Matrix.MessageController do
   end
 
   def send_message(conn, %{"data" => message}) do
-    MessageDispatcher.dispatch(message)
+    message
+    |> AclMessage.from_hash
+    |> MessageDispatcher.dispatch
 
     conn
     |> json("ok")

@@ -27,7 +27,9 @@ defmodule Matrix.AgentsChannel do
   end
 
   def handle_in("message:new", message, socket) do
-    MessageDispatcher.dispatch(message)
+    message
+    |> AclMessage.from_hash
+    |> MessageDispatcher.dispatch
 
     {:reply, :ok, socket}
   end
