@@ -9,6 +9,8 @@ const reduce = (state = initialState, action) => {
   switch (action.type) {
 
     case 'USE_HTTP':
+      state.channel.leave();
+
       return {
         http: true,
         webSockets: false,
