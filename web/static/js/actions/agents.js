@@ -81,3 +81,19 @@ export function stopAgent(name, type, host, protocol) {
     }
   }
 }
+
+export function sendAclMessage(values, protocol) {
+  return (dispatch) => {
+    if (protocol.http) {
+      api
+        .sendAclMessage(values)
+        .then(response => console.log(response));
+    } else {
+      protocol
+        .channel
+        .push('message:new', values)
+        .receive('ok', response => console.log('Message sent successully'))
+        .receive('error', response => console.log('Message failed'));
+    }
+  }
+}

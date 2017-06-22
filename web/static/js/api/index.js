@@ -44,5 +44,13 @@ export default {
     const url = `${ apiUrl() }/agents/running/id/${ agentUri }`;
 
     return axios.delete(url);
+  },
+
+  sendAclMessage(values) {
+    const url = `${ apiUrl() }/messages`;
+
+    return axios
+      .post(url, { data: values }, { headers: headers() })
+      .catch(error => handleError(error));
   }
 };
