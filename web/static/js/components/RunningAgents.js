@@ -19,7 +19,7 @@ const Agent = ({ name, type, host, stopAgent }) =>
     <td>
       <h4>
         <Button bsStyle="danger" bsSize="xsmall" onClick={ () => stopAgent(name, type, host) }>
-          Stop agent
+          Stop
         </Button>
       </h4>
     </td>
@@ -41,10 +41,10 @@ class RunningAgents extends Component {
 
   render() {
     return (
-      <Col md={ 3 } className="roundedBorders">
+      <Col md={ 3 } mdOffset={ 1 } className="component">
         <Table>
           <caption>
-            <h1 className="text-center">Running Agents</h1>
+            <h3 className="text-center">Running Agents</h3>
           </caption>
           <thead>
             <tr width="30px"></tr>

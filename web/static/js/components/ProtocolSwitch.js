@@ -3,7 +3,7 @@ import { Button, Row } from 'react-bootstrap';
 
 const styles = {
   switchButton: {
-    marginBottom: '5rem',
+    marginBottom: '2rem',
     padingLeft: '10px'
   },
 
@@ -22,7 +22,7 @@ class ProtocolSwitch extends Component {
     const { useHttp, useWebSockets, protocol } = this.props;
 
     return (
-      <Row style={ styles.switchButton }>
+      <Row className="text-center" style={ styles.switchButton }>
         <strong style={ styles.wsText }>WebSockets:</strong>
         <Button
           bsStyle={ protocol.http ? 'danger' : 'success' }

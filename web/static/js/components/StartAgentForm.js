@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { Field, reduxForm, SubmissionError  } from 'redux-form'
-import { connect } from 'react-redux'
+import { Field, reduxForm } from 'redux-form'
 import {
   Form,
   FormControl,

@@ -4,6 +4,7 @@ import AgentTypes from '../components/AgentTypes';
 import RunningAgents from '../components/RunningAgents';
 import StartAgentModal from '../components/StartAgentModal';
 import ProtocolSwitch from '../components/ProtocolSwitch';
+import AclMessageForm from '../components/AclMessageForm';
 import {
   Grid,
   Row,
@@ -38,18 +39,23 @@ class Root extends Component {
     const { agentTypes, runningAgents, modal, protocol } = this.props;
 
     return (
-      <Grid fluid={ true } style={ { margin: "3rem 15rem" } }>
+      <Grid fluid={ true } style={ { margin: "2rem 10rem" } }>
         <ProtocolSwitch
           protocol={ protocol }
           useHttp={ this.props.useHttp }
           useWebSockets={ this.props.useWebSockets }
         />
+        <hr />
         <Row>
           <AgentTypes
             types={ agentTypes }
             showModal={ this.props.showModal }
           />
-          <Col md={ 6 } />
+          <AclMessageForm
+            performatives={ this.props.performatives }
+            runningAgents={ runningAgents }
+            onSubmit={ (values) => console.log(values) }
+          />
           <RunningAgents
             agents={ runningAgents }
             stopAgent={ (name, type, host) => this.props.stopAgent(name, type, host, protocol) }

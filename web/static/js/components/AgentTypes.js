@@ -23,7 +23,7 @@ const AgentType = ({ name, module, showModal }) =>
           bsSize="xsmall"
           onClick={ () => showModal({ name, module }) }
         >
-          Start agent
+          Start
         </Button>
       </h4>
     </td>
@@ -44,10 +44,10 @@ class AgentTypes extends Component {
 
   render() {
     return (
-      <Col md={ 3 } className="roundedBorders">
+      <Col md={ 3 } className="component">
         <Table>
           <caption>
-            <h1 className="text-center">Agent Classes</h1>
+            <h3 className="text-center">Agent Classes</h3>
           </caption>
           <thead>
             <tr width="30px"></tr>
