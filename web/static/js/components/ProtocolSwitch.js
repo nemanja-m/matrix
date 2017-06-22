@@ -27,7 +27,7 @@ class ProtocolSwitch extends Component {
         <Button
           bsStyle={ protocol.http ? 'danger' : 'success' }
           bsSize="xsmall"
-          onClick={ protocol.http ? useWebSockets : useHttp }
+          onClick={ () => protocol.http ? useWebSockets() : useHttp() }
           style={ styles.noOutline }
         >
           { protocol.http ? 'Off' : 'On' }

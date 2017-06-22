@@ -46,6 +46,9 @@ defmodule Matrix.AgentManager do
       running_agents =
         Enum.map(agents, fn hash -> Agent.from_hash(hash) end)
 
+      # Update clients via web sockets
+      Matrix.Endpoint.broadcast! "agents", "agent:start", %{agent: running_agents |> List.first}
+
       Agents.add_running(aliaz, running_agents)
     end)
   end
@@ -57,6 +60,8 @@ defmodule Matrix.AgentManager do
   def delete_running_agent(agent) do
     Agents.delete_running(agent)
     Logger.warn "Agent '#{agent.id.name}' stopped"
+
+    Matrix.Endpoint.broadcast! "agents", "agent:stop", %{name: agent.id.name}
   end
 
   @spec start_agent(type :: AgentType.t, name :: String.t) :: :ok
@@ -70,6 +75,9 @@ defmodule Matrix.AgentManager do
 
         Agents.add_running(Env.this_aliaz, [agent])
         Logger.warn "Agent '#{name}' started"
+
+        # Update clients via web sockets
+        Matrix.Endpoint.broadcast! "agents", "agent:start", %{agent: agent}
 
         ConnectionManager.agent_centers
         |> Enum.each(fn %AgentCenter{address: address} ->

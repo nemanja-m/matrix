@@ -2,7 +2,7 @@ defmodule Matrix.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "communication:*", Matrix.CommunicationChannel
+  channel "agents", Matrix.AgentsChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
