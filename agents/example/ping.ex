@@ -2,7 +2,11 @@ defmodule Example.Ping do
   use Matrix.Agent,
     state: %{}
 
+  require Logger
+
   def handle_message(message, state) do
-    {:ok, "#{message} from #{state.id.name}", state}
+    Logger.warn "#{state.id.name} received #{message.performative} from #{message.sender}"
+
+    {:ok, "", state}
   end
 end

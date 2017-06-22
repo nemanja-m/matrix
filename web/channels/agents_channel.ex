@@ -1,7 +1,17 @@
 defmodule Matrix.AgentsChannel do
   use Phoenix.Channel
 
-  alias Matrix.{Agent, AID, AgentCenter, Cluster, Agents, AgentManager, AgentType, MessageDispatcher}
+  alias Matrix.{
+    Agent,
+    AID,
+    AgentCenter,
+    Cluster,
+    Agents,
+    AgentManager,
+    AgentType,
+    MessageDispatcher,
+    AclMessage
+  }
 
   def join("agents", _message, socket) do
     {:ok, socket}
