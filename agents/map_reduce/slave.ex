@@ -29,7 +29,7 @@ defmodule MapReduce.Slave do
 
   defp parse_file(filename) do
     File.read!(filename)
-    |> String.replace(~r/[\.,#\{\}\?_%:\"=\(\)\|]/, " ")
+    |> String.replace(~r/[\.,#\{\}\?_%:\"=\(\)\|><!\+\-\*]/, " ")
     |> String.split
   end
 
