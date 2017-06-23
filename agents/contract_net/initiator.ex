@@ -43,4 +43,5 @@ defmodule ContractNet.Initiator do
     {:ok, state}
   end
 
+  def handle_message(message, state), do: {:ok, state}
 end
