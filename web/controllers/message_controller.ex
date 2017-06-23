@@ -11,9 +11,11 @@ defmodule Matrix.MessageController do
   end
 
   def send_message(conn, %{"data" => message}) do
-    message
-    |> AclMessage.from_hash
-    |> MessageDispatcher.dispatch
+    spawn fn ->
+      message
+      |> AclMessage.from_hash
+      |> MessageDispatcher.dispatch
+    end
 
     conn
     |> json("ok")
