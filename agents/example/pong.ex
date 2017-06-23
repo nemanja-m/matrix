@@ -14,7 +14,7 @@ defmodule Example.Pong do
 
     MessageDispatcher.send_message(ping, message)
 
-    {:ok, "", state}
+    {:ok, state}
   end
 
 end

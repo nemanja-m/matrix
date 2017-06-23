@@ -32,11 +32,10 @@ defmodule Matrix.Agent do
         {:ok, state}
       end
 
-      def handle_call({:handle_message, message}, _form, state) do
-        case __MODULE__.handle_message(message, state) do
-          {:ok, result, new_state}    -> {:reply, {:ok, result}, new_state}
-          {:error, reason, new_state} -> {:reply, {:error, reason}, new_state}
-        end
+      def handle_cast({:handle_message, message}, state) do
+        {_, new_state} = __MODULE__.handle_message(message, state)
+
+        {:noreply, new_state}
       end
 
       def handle_call(:state, _from, state) do

@@ -15,7 +15,7 @@ defmodule Matrix.MessageDispatcher do
 
   def send_message(%Agent{id: %AID{name: name, host: host}}, message) do
     if host == Env.this do
-      GenServer.call process_name(name), {:handle_message, message}
+      GenServer.cast process_name(name), {:handle_message, message}
     else
       Logger.warn "Agent: #{name} is running on #{host.aliaz} node"
       Logger.warn "Redirecting ..."

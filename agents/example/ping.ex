@@ -14,12 +14,12 @@ defmodule Example.Ping do
 
     MessageDispatcher.send_message(pong, message)
 
-    {:ok, "", state}
+    {:ok, state}
   end
 
   def handle_message(message = %AclMessage{performative: :inform}, state) do
     Logger.warn "#{state.id.name} received #{message.performative} from #{message.sender}"
 
-    {:ok, "", state}
+    {:ok, state}
   end
 end
