@@ -17,5 +17,5 @@ defmodule PingPong.Pong do
     {:ok, state}
   end
 
-  def handle_message(message, state), do: {:ok, state}
+  def handle_message(_, state), do: {:ok, state}
 end
