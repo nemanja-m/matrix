@@ -25,17 +25,32 @@ defmodule Matrix.Agent do
       end
 
       def init(name) do
-        state =
-          Matrix.Agent.new(name, Matrix.AgentManager.module_to_type(__MODULE__))
-          |> Map.merge(unquote(options[:state]))
+        {:ok, initial_state(name)}
+      end
 
-        {:ok, state}
+      def reset_state(name) do
+        GenServer.cast(name |> String.to_existing_atom, :reset)
+      end
+
+      defp initial_state(name) do
+        name
+        |> Matrix.Agent.new(Matrix.AgentManager.module_to_type(__MODULE__))
+        |> Map.merge(unquote(options[:state]))
       end
 
       def handle_cast({:handle_message, message}, state) do
-        {_, new_state} = __MODULE__.handle_message(message, state)
+        case __MODULE__.handle_message(message, state) do
+          {_, new_state} -> {:noreply, merge_state(state, new_state)}
+          _              -> {:noreply, state}
+        end
+      end
 
-        {:noreply, new_state}
+      defp merge_state(old_state, new_state) do
+        Map.merge(old_state, new_state, fn _, old_value, new_value -> new_value end)
+      end
+
+      def handle_cast(:reset, state) do
+        {:noreply, initial_state(state.id.name)}
       end
 
       def handle_call(:state, _from, state) do

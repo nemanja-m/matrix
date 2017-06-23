@@ -130,7 +130,6 @@ defmodule Matrix.AgentManager do
   end
   defp stop_agent(agent, host_node: true) do
     agent.id.name
-    |> String.capitalize
     |> String.to_atom
     |> GenServer.stop(:shutdown)
 
