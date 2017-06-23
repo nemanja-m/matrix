@@ -7,13 +7,13 @@ defmodule Matrix.MessageDispatcher do
     message.receivers
     |> Enum.each(fn receiver ->
       case Agents.find_by_name(receiver) do
-        agent -> send_message(agent, message)
         nil   -> Logger.error "Agent is not running"
+        agent -> send_message(agent, message)
       end
     end)
   end
 
-  defp send_message(%Agent{id: %AID{name: name, host: host}}, message) do
+  def send_message(%Agent{id: %AID{name: name, host: host}}, message) do
     if host == Env.this do
       GenServer.call process_name(name), {:handle_message, message}
     else
@@ -30,7 +30,6 @@ defmodule Matrix.MessageDispatcher do
 
   defp process_name(name) do
     name
-    |> String.capitalize
     |> String.to_atom
   end
 end
